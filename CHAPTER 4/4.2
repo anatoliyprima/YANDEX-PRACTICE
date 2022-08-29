@@ -1,0 +1,69 @@
+Задание 4.2
+
+Для начала собираем бэкенд. Чтобы его запустить нам потребуется создать несколько файлов в директории backend/
+
+.gitlab-ci.yml
+deploy.sh
+sausage-store-backend.service
+
+Содержимое файла .gitlab-ci.yml
+variables:
+   VERSION: 1.0.${CI_PIPELINE_ID}
+   MAVEN_REPO_PATH: ./.m2/repository
+   JAVA_OPTS: -XX:MaxRAMPercentage=90
+
+before_script:
+  #устанавливаем ssh-agent для удобства аутентификации по ssh
+  - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  #сохраняем сгенеренный ранее приватный ключ для раннера
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 600 ~/.ssh
+  - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+
+stages:
+   - build
+   - release
+   - deploy
+
+build:a
+   stage: build
+   script:
+      - cd backend
+      - mvn package -Dversion.application=${VERSION} -Dmaven.repo.local=${MAVEN_REPO_PATH}
+   rules:
+      - changes:
+           - backend/*
+
+release:
+   stage: release
+   script:
+      - cd backend
+      - mvn deploy -DskipTests -Dversion.application=${VERSION} -Dmaven.repo.local=${MAVEN_REPO_PATH} -s settings.xml
+   rules:
+      - changes:
+           - backend/*
+
+
+deploy:
+  stage: deploy
+  script:
+     - scp ./backend/sausage-store-backend.service ${DEV_USER}@${DEV_HOST}:/home/${DEV_USER}/sausage-store-backend.service
+     - ssh ${DEV_USER}@${DEV_HOST} "export "CURRENT_VERSION=${VERSION}"; export "VERSION=${VERSION}"; export "DEV_HOST=${DEV_HOST}";export "NEXUS_REPO_URL_BACKEND=${NEXUS_REPO_URL_BACKEND}"; export "NEXUS_REPO_USER=${NEXUS_REPO_USER}"; export "NEXUS_REPO_PASS=${NEXUS_REPO_PASS}";setsid /bin/bash -s " < ./backend/deploy.sh
+  # скачиваем ранее собранный артефакт с Nexus. При этом необходимо заранее
+  # прописать креды от Nexus в переменные в настройке пайплайна
+     - curl -u ${NEXUS_REPO_USER}:${NEXUS_REPO_PASS} -o sausage-store-${VERSION}.jar ${NEXUS_REPO_URL_BACKEND}/com/yandex/practicum/devops/sausage-store/${VERSION}/sausage-store-${VERSION}.jar'
+ # запускаем бэкенд
+     - java -jar sausage-store-${VERSION}.jar &
+
+Теория предлагает запись шага deploy в таком виде
+deploy:
+  stage: deploy
+  script:
+    - scp ./backend/sausage-store.service ${DEV_USER}@${DEV_HOST}:/home/${DEV_USER}/sausage-store.service
+    - ssh ${DEV_USER}@${DEV_HOST} "export "CURRENT_VERSION=${VERSION}"; export "VERSION=${VERSION}"; export "DEV_HOST=${DEV_HOST}";export "NEXUS_REPO_URL=${NEXUS_REPO_URL}"; export "NEXUS_REPO_USER=${NEXUS_REPO_USER}"; export "NEXUS_REPO_PASS=${NEXUS_REPO_PASS}";setsid /bin/bash -s " < ./backend/deploy.sh
+В данном куске кода не совпадает название исходного и заменяемого юнит-файла. Требуется поправить sausage-store.service на sausage-store-backend.service
+
+Так же переменной NEXUS_REPO_URL нет, для бэка создана отдельная переменная NEXUS_REPO_URL_BACKEND, заменяем ее везде. (отредактировано) 

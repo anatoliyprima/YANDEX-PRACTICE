@@ -1,0 +1,133 @@
+Practice 5.1
+
+id_rsa_yandex_51.pub
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3x2nKNvhYozogxWklXxTz20oVmQp/9w3ZiiB4UtYABLmDQVWihh87rIyWbBpcdf7Cmxgwsdv0i5htQSprW3g6JvYDHEYgJlftwLr9a8A1P6Gn8WIQH4DMZkwQJaaUub6gD94JKgrc/mhZV2ZfM+wXZCp75Ns+maWBKx+chSKX4XQa7fVB7SnhJyQ5cEV+9PbPbfs9qGKArHSjnaW7QqdrGHQrsX5jU/YR1EuYLHWaz3TwBprfS7txKiPq/FYwiwBnh+vJ2p/GHkEV8vW9W38r8M+9F3PmywSC8zcAPwIVgmVl7I6TdPkOd5QUmoZVTJwzNrt9iLf4pzMz4hnLjQWJ anatolijprima@MBP-Anatolij
+
+id_rsa_yandex_51
+
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn
+NhAAAAAwEAAQAAAQEAt8dpyjb4WKM6IMVpJV8U89tKFZkKf/cN2YogeFLWAAS5g0FVooYf
+O6yMlmwaXHX+wpsYMLHb9IuYbUEqa1t4Oib2AxxGICZX7cC6/WvANT+hp/FiEB+AzGZMEC
+WmlLm+oA/eCSoK3P5oWVdmXzPsF2Qqe+TbPpmlgSsfnIUil+F0Gu31Qe0p4SckOXBFfvT2
+z237PahigKx0o52lu0Knaxh0K7F+Y1P2EdRLmCx1ms908Aaa30u7cSoj6vxWMIsAZ4fryd
+qfxh5BFfL1vVt/K/DPvRdz5ssEgvM3AD8CFYJlZeyOk3T5DneUFJqGVUycMza7fYi3+Kcz
+M+IZy40FiQAAA9CxLqC6sS6gugAAAAdzc2gtcnNhAAABAQC3x2nKNvhYozogxWklXxTz20
+oVmQp/9w3ZiiB4UtYABLmDQVWihh87rIyWbBpcdf7Cmxgwsdv0i5htQSprW3g6JvYDHEYg
+JlftwLr9a8A1P6Gn8WIQH4DMZkwQJaaUub6gD94JKgrc/mhZV2ZfM+wXZCp75Ns+maWBKx
++chSKX4XQa7fVB7SnhJyQ5cEV+9PbPbfs9qGKArHSjnaW7QqdrGHQrsX5jU/YR1EuYLHWa
+z3TwBprfS7txKiPq/FYwiwBnh+vJ2p/GHkEV8vW9W38r8M+9F3PmywSC8zcAPwIVgmVl7I
+6TdPkOd5QUmoZVTJwzNrt9iLf4pzMz4hnLjQWJAAAAAwEAAQAAAQEApLUkKwd5LHed8SD8
+S3Ib5TH0A8dVkbppvz38O9qB0SJq4Sf9B9wMwf6zQV1Bgvx9hwxZccr1xwYVZlWxHuarqf
+KhKch9UPMMexjwfY/Eg/SzfUDpEmoplQdZxF76HPEb13hhFvWHJukbvHaIWWq/fXdYXBGQ
+LVqm6k0r16u6hUMVLUiBJTLpgaCmSxUzikPwoKUbw10DNghhY2lIy/tTzMT3QhFo7Lpw6d
+Ft7eXmlHFfPNbNdNKFuSCFeQkevn/3TjYaKyg4zMHbsocsSxIDdvDIiRlRHGFf88QYy/5f
+14bpZjPop0SYCMERBCcQMg2H6ANPOW1ZTrnegn41WKaFwQAAAIAOFSK8tz+u9e5lvs6Zwz
+clxR6fV9njIL5vtpxwrsAdaP4MxSPp5lOHOiHuPwH2kB5jv5Is2kquMit/nZUyd6cRbRDh
+Nfsf1nf6wri5G9PpvepDpxkwaRkbNGYH9lpzhT10DC/b8ZWRmZvIOL4RpuAak4m8kwrwBI
+8sMfE4rPHaBgAAAIEA4Pyq5oug4FzWennowVp3CTw1is3ldqbOXKW+WQMqslYgJdb5CbaI
+lQELi4S+O/o3k13tRGnYRepEaX/uFD7yv3HHuEfhUsAT2W6IivfXzusfWW4bc+giljrobt
+sMXrQ8pPs6iWU7X0WGyb0eNFQ1XypnpEvWrvYoce5qbmVIooMAAACBANEcmTAgI6MJrOOT
+5PfWJWLH6muoWT4yGj5LguqT89XOFIgKn5T4g0hcTDz5wEjat9+yFNRrsCcptANAGsav+q
+AoQDMVdF4EdcLZZ1qVQ79G77rQ0wVFFImGk9PcSuylg6xGlYDX1ZpI3bW/N5yU8MVGIKZg
+OWFhz2Gt8ik+HgoDAAAAGmFuYXRvbGlqcHJpbWFATUJQLUFuYXRvbGlq
+
+при создании виртуальной машины в яндекс.клауд передаем ей  содержимое публичного ключа id_rsa_yandex_51.pub
+
+для подключения к ВМ используем команду
+
+ssh -i /Users/anatoliyprima/.ssh/id_rsa_yandex_51 student@84.252.136.112
+	где 84.252.136.112 - ip  созданной машины
+
+
+1. Создайте проект infrastructure, а в нём папку backup. Добавьте в проект ветку backup.
+
+2. Запустите сосисочную из файла sausage-store-0.0.1-SNAPSHOT.jar, который лежит в домашнем каталоге, и записывайте логи в /opt/log/sausage-store.log. Напомним, что вы изучали развёртывание нашего приложения в уроке 3 главы 4, когда запускали пайплайн. По желанию, можете даже собрать пайплайн вручную.
+
+3. С помощью logrotate настройте ротацию логов для сосисочной по принципу: размер лога не больше 10 мегабайт, правило проверяется раз в час, прошлые версии архивируются и их должно быть не больше 3. Не забудьте сделать так, чтобы при срабатывании настроенного в ротации правила в файл /opt/student_rotate.log отправлялось время отработки вашего правила logrotate. Сохранте конфиг от logrotate в ваш новый репозиторий в папку backup с именем logrotate_config.
+
+содержимое файла  logrotate_config
+
+cat logrotate_config.conf
+/opt/log/sausage-store.log {
+#ротация раз в час
+hourly
+copytruncate
+notifempty
+rotate 3
+create
+size 10M
+compress
+
+postrotate
+	dt=$(date '+%d/%m/%Y %H:%M:%S');
+	echo $dt >> /opt/student_rotate.log
+endscript
+}
+
+в текущей работе невозможно выполнить правильно ротацию с логом в запущенном приложении. правило  copytruncate не выполняется. Возможно выполнение имеено такой ротации, как указано в коде, только при остановленном приложении. Так как тот самый джарник нещадно срет логами и они достигают гигабайт данных, то любым образом надо урезать основной файл лога. Для этого пришлось накидать небольшой скрипт для чистки папки /opt/log и рестарта приложения.
+
+содержимое скрипта
+#! /bin/bash
+
+sudo systemctl stop sausage-store-backend.service
+sudo rm -R /opt/log/logs
+sudo rm -R /opt/log/sausage-store.log
+sudo systemctl start sausage-store-backend.service
+
+ следующую строчку добивать в крон
+* * * * * root logrotate -f -v /etc/logrotate.d/logrotate_config.conf && bash /home/student/stop-clean-start-backend-logs.sh
+
+ заходим в гитлаб, кладем файл с конфигом в проект infrastructure > backup
+
+4. Зайдите в Яндекс.Облако по ссылке. Авторизуйтесь под аккаунтом из самой первой рассылки со всеми доступами. В качестве логина используйте логин в Яндекс.Облако, пароль можете взять по соседству.
+
+5. Убедитесь, что вы вошли в облако cloud-praktikumdevopscourse. Если вы не видите данного облака в списке, напишите куратору. Обращаем ваше внимание, что дальнейшие задания нужно выполнять в этом облаке.
+
+6. Создайте образ диска вашей виртуальной машины и назовите его <имя-фамилия-день-месяц-backup>.
+
+7. Восстановите из вашего образа новую виртуалку с именем <имя-фамилия-день-месяц-backup>.
+
+8. Сделайте эту виртуальную машину прерываемой — проставьте галочку в соответствующем чекбоксе. Убедитесь, что на новой виртуальной машине, развёрнутой из образа, сосисочная не запущена.
+
+9. Создайте пользователей user-backup на обеих виртуальных машинах с правами: на первой машине — с доступом к бэкенду сосисочной на чтение, на второй — с правами за запись в папку /opt/backup.
+
+	создаем пользователя  user-backup на ВМ от яндекс.клауда
+	student@anatoly-prima-25-06-backup:~$ sudo useradd user-backup
+
+	создаем директорию /opt/backup
+	sudo mkdir backup
+
+	так как команды setfacl  и getfacl не знает, то обновляемся и устанавливаем acl
+	sudo apt update
+	sudo apt install acl
+
+	теперь можем задать списки acl. Добавляем пользователя user-backup, только на запись
+	sudo setfacl -m u:user-backup:rwx /opt/backup
+
+10. Настройте rsync для бэкапирования раз в час файла бэкенда сосисочной на вторую машину в папку /opt/backup/<год-месяц-день-час>/. Запуск задания от пользователя user-backup поместите в конец файла /etc/crontab первой машины. Сохраните с 1-й виртуалки изменённый файл /etc/crontab в ваш репозиторий, в папку backup под именем crontab_rsync.
+
+копирование с одной виртуалки на другую
+rsync -azvh /home/jarservice/sausage-store.jar user-backup@84.252.136.112:/opt/backup/$(date +"%m-%d-%Y")/
+
+создаем небольшой скрипт для выполнения данной команды
+rsync -azvh /home/jarservice/sausage-store.jar user-backup@130.193.40.93:/opt/backup/$(date +"%H-%M-%S--%m-%d-%Y")/ >> /home/user-backup/rcync.log
+
+в /etc/crontab вносим следущую строчку на выполнение копирование каждый час скрипта на выполнение копирования
+* * * * * user-backup /home/user-backup/rsync_backup.sh
+
+11. Настройте на 2-й виртуалке ротацию бэкапов бэкендов, добавив в /etc/crontab строчку на удаление старых файлов (см. урок). Нужно, чтобы их было не больше 30. Сохраните со 2-й виртуалки изменённый файл /etc/crontab в ваш проект, в папку backup под именем crontab_rotate.
+
+* * * * * find /opt/backup/* -mmin +30 -delete && ll
+выполнять действие каждую минуту / найти / найти в папке все вложенные файлы / оператор времени, в данном случае минуты / все что старше 30 минут / что хотим сделать, хотим удалить
+
+
+12. Передайте наставнику IP-адреса ваших виртуальных машин. Создайте Merge Request в ветку main (или master) и отправьте наставнику ссылку с MR на проверку.
+
+первая виртуальная машина 178.154.204.178
+вторая виртуальная машина 50.250.17.18
+
+
+
+13. После того как задание будет принято, удалите вторую виртуальную машину и на первой машине в cron остановите запуск rsync.

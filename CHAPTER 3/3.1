@@ -1,0 +1,82 @@
+Задание 1
+
+1.1 Зайдите на свою виртуальную машину, используя данные, которые были отправлены вам на почту.
+
+ssh student@178.154.204.171 (prima1984864)
+
+1.2 Создайте пользователя jarservice c домашней директорией и группу jarusers. Создайте пользователя front-user.
+
+# создаем пользователя сразу с домашней директорией
+sudo adduser -m jarservice
+
+#создаем группу jarusers
+sudo groupadd jarusers
+
+#создаем пользователя front-user
+sudo useradd front-user
+
+cat /etc/group | grep user
+	sudo:x:27:ubuntu,admin,ci-user
+	users:x:100:
+	ci-user:x:1004:
+	jarusers:x:1006:
+	front-user:x:1007:
+
+#чтобы проверить создавшихся пользователей, можно посмотреть в файле
+sudo less /etc/passwd
+
+#чтобы проверить группы
+cat /etc/group
+
+	#получим в самом конце списка
+	jarservice:x:1005:
+	jarusers:x:1006:jarservice
+	front-user:x:1007:
+
+1.3 Добавьте пользователя jarservice в группу jarusers.
+
+#переносим созданного jaruservice в группу jarusers
+sudo usermod -aG jarusers jarservice
+
+#записи по группам хранятся в файле /etc/group . Проверем наличие созданной группы и пользователя в ней
+
+cat /etc/group | grep jar
+	jarservice:x:1005:
+	jarusers:x:1006:jarservice
+
+1.4 Скопируйте jar-файл из домашней директории пользователя admin в папку /var/jarservice.
+
+#копируем лежащий по пути файл в нужную директорию
+
+sudo cp /home/admin/sausage-store-0.0.1-SNAPSHOT.jar /var/jarservice/
+ls -la /var/jarservice/
+	total 40360
+	drwxr-xr-x  2 root root       46 Apr  6 15:33 .
+	drwxr-xr-x 13 root root     4096 Mar  2 16:41 ..
+	-rwxr-xr-x  1 root root 41323258 Apr  6 15:33 sausage-store-0.0.1-SNAPSHOT.jar
+
+1.4 Из папки /var/jarservice запустите бэкенд (с помощью java -jar <имя файла>) из-под администратора.
+
+sudo java -jar /var/jarservice/sausage-store-0.0.1-SNAPSHOT.jar
+
+#выдало ошибку, что порт 8080 занят. Проверяем что на 8080 порту
+
+sudo lsof -i :8080
+
+#как только определяем, какой сервис использовал этот порт, глушим его
+
+sudo systemctl stop jenkins.service
+sudo systemctl disable jenkins.service
+
+#заново запускаем jar файл
+
+смотрим перемененные в домашней директории /home/student
+.
+├── ${env:LOG_PATH}logs
+│   └── backend
+│       ├── all.log
+│       └── app.log
+└── ${env:REPORT_PATH}
+    ├── report.txt
+    ├── report.txt.2022-04-07-02-56.gz
+    └── report.txt.2022-04-07-03-00.gz

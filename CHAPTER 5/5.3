@@ -1,0 +1,186 @@
+Practice 5.3
+
+!!! PLAYBOOK_STABLE !!!  ---
+
+#
+- hosts: all
+  become: yes
+
+  tasks:
+
+# обновляем apt
+
+  - name: update apt
+    apt:
+      update_cache: yes
+
+# устанавливаем джаву версии 16
+
+  - name: install java for backend
+    apt:
+      name: "{{packages}}"
+      state: present
+    vars:
+      packages:
+      - openjdk-16-jdk
+
+# добавляем репозиторий nodejs. Add nodesource repository to Apt's sources.list
+
+  - name: "Add nodejs apt key"
+    apt_key:
+      url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+      state: present
+
+  - name: "Add nodejs 16.x ppa for apt repo"
+    apt_repository:
+      repo: deb https://deb.nodesource.com/node_16.x focal main
+      state: present
+      update_cache: yes
+
+# Install Node.js
+
+  - name: "Install nodejs"
+    apt:
+      name: nodejs
+
+# добавляем сервисного пользователя для бэка
+# пользователь с именем jarservice и домашней директорией
+
+  - name: add jarservice for backend
+    ansible.builtin.user:
+      name: jarservice
+      password: "{{ 'password' | password_hash('sha512', 'password')  }}"
+      state: "present"
+      shell: "/bin/bash"
+      system: false
+      create_home: true
+      home: "/home/jarservice"
+
+# добавляем сервисного пользоавтеля для фронта
+# пользователь с именем front-userи домашней директорией
+
+  - name: add front-user for frontend
+    ansible.builtin.user:
+      name: front-user
+      password: "{{ 'password' | password_hash('sha512', 'password')  }}"
+      state: "present"
+      shell: "/bin/bash"
+      system: false
+      create_home: true
+      home: "/home/front-user"
+
+
+# создаем все необходимые диретории для бэкенда
+
+  - name: create directory for logs
+    ansible.builtin.file:
+      path: /logs
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: create directory for reports
+    ansible.builtin.file:
+      path: /var/www-data/htdocs
+      state: directory
+      owner: front-user
+      group: front-user
+      mode: 0755
+
+# создаем все необходимые диретории для фронтенда
+
+  - name: create directory for frontend
+    ansible.builtin.file:
+      path: /var/www-data/dist/frontend
+      state: directory
+      owner: front-user
+      group: front-user
+      mode: 0755
+      recurse: yes
+
+# скачиваем артефакты с Нексуса для бэкенда
+
+  - name: download artifacts for backend
+    ansible.builtin.get_url:
+      url: https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-backend/com/yandex/practicum/devops/sausage-store/{{B_VERSION}}/sausage-store-{{B_VERSION}}.jar
+      dest: /home/jarservice/sausage-store.jar
+      username: "{{NEXUS_USER}}"
+      password: "{{NEXUS_PASSWORD}}"
+
+# так как запускать джарник будет сервис, а в сервисе прописан запуск из под пользователя jarservice
+# то и права на файл следует изменить на jarservice
+
+  - name: chown to jarservice
+    ansible.builtin.file:
+      path: /home/jarservice/sausage-store.jar
+      owner: jarservice
+      group: jarservice
+      mode: 0755
+
+# скачиваем артефакты с Нексуса для фронтенда
+
+  - name: dowload artifacts for frontend
+    ansible.builtin.get_url:
+      url: https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-frontend/sausage-store/{{F_VERSION}}/sausage-store-{{F_VERSION}}.tar.gz
+      dest: /var/www-data/sausage-store-{{F_VERSION}}.tar.gz
+      username: "{{NEXUS_USER}}"
+      password: "{{NEXUS_PASSWORD}}"
+
+# в отличии от джарника бэкенда, фронтенд имеент в своем составе несколько файлов
+# и скачивается архивом, следовательно его необходим будет распаковать после скачивания
+
+  - name: Extract frontend artifact to standart folder
+    unarchive:
+      src: "/var/www-data/sausage-store-{{F_VERSION}}.tar.gz"
+      dest: /var/www-data/dist/frontend/
+      remote_src: yes #указание распаковывать на сервере, а не локально!
+
+
+# теперь надо распакованным файлам изменить владельца
+# сразу после распаковки владелец root, надо изменить его не front-user
+
+  - name: chown to front-user
+    ansible.builtin.file:
+      path: /var/www-data/
+      owner: front-user
+      group: front-user
+      mode: 0775
+      recurse: yes
+
+# из подготовного tamplates/backend.service отправляем на машину юнит
+
+  - name: create sevice unit for backend
+    template:
+      src: templates/backend.service
+      dest: /etc/systemd/system/backend.service
+
+# запускаем юнит написанный для бэкенда
+
+  - name: start backend.service
+    ansible.builtin.systemd:
+      state: started
+      name: backend.service
+
+# как это сделать средствами Ansible еще не нашел, так что будем тупо выполнять команды
+  - name: install npm and install http-server
+    ansible.builtin.shell: |
+      sudo npm install
+      sudo run build
+      sudo npm install -g http-server
+    args:
+      chdir: /var/www-data/
+
+# из подготовленого tamplates/frontend.service отправляем на машину юнит
+
+  - name: create sevice unit for frontend
+    template:
+      src: templates/frontend.service
+      dest: /etc/systemd/system/frontend.service
+
+# запускаем юнит написанный для фронтенда
+
+  - name: start frontend.service
+    ansible.builtin.systemd:
+     state: started
+     name: frontend.service

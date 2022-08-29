@@ -1,0 +1,44 @@
+6.0.8
+
+Сквозное Задание 8
+
+* Постройте подходящие индексы и замерьте время выполнения запроса:
+
+select COUNT(*) from orders o INNER JOIN order_product op ON o.id = op.order_id INNER JOIN product p ON op.product_id = p.id WHERE p.id = 2;
+
+EXPLAIN SELECT COUNT(*) from orders o INNER JOIN order_product op ON o.id = op.order_id INNER JOIN product p ON op.product_id = p.id WHERE p.id = 2;
+
+
+
+
+
+
+CREATE INDEX orders_idx ON orders (id);
+
+CREATE INDEX order_product_idx ON order_product (order_id);
+
+CREATE INDEX product_idx ON product (id);
+
+
+
+
+СОЗДАНИЕ ИНДЕКСА по одному столбцу
+
+CREATE INDEX index_name_idx
+ON table_name(column_name)
+
+СОЗДАНИЕ ИНДЕКСА по нескольким столбцам
+
+CREATE INDEX index_name_idx
+ON table_name(column_1_name, column_2_name, column_3_name)
+в таком индексе сортировка идет последовательно по 1 потом по 2 и 3 столбцам
+данный индекс не будет использован БД при запросе ко 2 или 3 столбцу
+
+УДАЛИТЬ ИНДЕКС
+DROP INDEX index_name_idx
+
+проверить есть ли индексы
+SELECT tablename, indexname, indexdef
+FROM pg_indexes
+WHERE schemaname = 'public'
+ORDER BY tablename, indexname;

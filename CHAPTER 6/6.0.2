@@ -1,0 +1,64 @@
+Сквозное Задание 2
+* Получите кластер БД и креды от куратора.
+
+Креды для подключения к общей Постгрес для 4 когорты
+
+Установите сертификат:
+mkdir -p ~/.postgresql && \
+wget "https://crls.yandex.net/allCAs.pem" -O ~/.postgresql/root.crt && \
+chmod 0600 ~/.postgresql/root.crt
+Пример строки подключения:
+psql "host=rc1a-nk612bm46ahukyu4.mdb.yandexcloud.net \
+      port=6432 \
+      sslmode=verify-full \
+      dbname={ваш_логин ака электронная почта до @} \
+      user={ваш_логин ака электронная почта до @} \
+      target_session_attrs=read-write"
+Пароль для всех Testusr1234
+
+Пример подключения:
+psql "host=rc1a-nk612bm46ahukyu4.mdb.yandexcloud.net \
+      port=6432 \
+      sslmode=verify-full \
+      dbname=sergeynovozhilov \
+      user=sergeynovozhilov \
+      target_session_attrs=read-write"
+
+Установите клиент psql для подключения к БД:
+$ sudo apt-get install -y postgresql-client
+
+Подключитесь к полученной БД:
+psql postgresql://$PSQL_USER:$PSQL_PASSWORD@$PSQL_HOST:$PSQL_PORT/$PSQL_DBNAME
+
+
+psql postgresql://anatolyprima:Testusr1234@rc1a-nk612bm46ahukyu4.mdb.yandexcloud.net:6432/anatolyprima
+
+psql (12.11 (Ubuntu 12.11-0ubuntu0.20.04.1), server 14.4 (Ubuntu 14.4-201-yandex.52448.a37cfc9be3))
+WARNING: psql major version 12, server major version 14.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+
+Сквозное Задание 4
+Укажите в unit-файле подключение к БД как опции при запуске java jar:
+
+
+Description=sausage-store-backend
+
+[Service]
+User=jarservice
+Environment='LOG_PATH=/'
+Environment='REPORT_PATH=/var/www-data/htdocs/'
+ExecStart=java -jar /home/jarservice/sausage-store.jar
+StandardOutput=file:/logs/out.log
+Restart=always
+
+
+--spring.datasource.url=jdbc:postgresql://rc1a-nk612bm46ahukyu4.mdb.yandexcloud.net:6432/anatolyprima
+--spring.datasource.username=anatolyprima
+--spring.datasource.password=Testusr1234
+
+
+[Install]
+WantedBy=multi-user.target

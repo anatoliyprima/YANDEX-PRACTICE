@@ -1,0 +1,22 @@
+# создание дампа в 8 потоков, в формате директории
+pg_dump postgresql://$PSQL_USER:$PSQL_PASSWORD@$PSQL_HOST:$PSQL_PORT/$PSQL_DBNAME -j 8 -Fd -f /tmp/dump.dir
+
+# выгрузка дампа в формате директории
+pg_restore -d "postgresql://$PSQL_USER:$PSQL_PASSWORD@$PSQL_HOST:$PSQL_PORT/$PSQL_DBNAME" --format=d /tmp/dump.dir/
+
+
+
+student@fhmabtvludhd77qrn02h:~$ pg_dump postgresql://anatolyprima:Testusr1234@rc1a-nk612bm46ahukyu4.mdb.yandexcloud.net:6432/anatolyprima -j 8 -Fd -f /tmp/dump.dir/
+pg_dump: error: server version: 14.4 (Ubuntu 14.4-201-yandex.52448.a37cfc9be3); pg_dump version: 12.11 (Ubuntu 12.11-0ubuntu0.20.04.1)
+pg_dump: error: aborting because of server version mismatch
+
+
+student@fhmabtvludhd77qrn02h:~$ sudo cp /usr/bin/pg_dump /usr/bin/pg_dump_backup
+student@fhmabtvludhd77qrn02h:~$ sudo rm /usr/bin/pg_dump
+student@fhmabtvludhd77qrn02h:~$ sudo ln -s /usr/lib/postgresql/14/bin/pg_dump /usr/bin/pg_dump
+student@fhmabtvludhd77qrn02h:~$ pg_dump --version
+
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+sudo apt-get -y install postgresql-14

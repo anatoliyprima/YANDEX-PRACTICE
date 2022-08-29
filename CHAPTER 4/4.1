@@ -1,0 +1,142 @@
+Задание 4.1
+
+1 После урока вы должны быть вооружены учётной записью в Nexus c правами на создание новых репозиториев. Если это не так — проверьте почту, там лежат данные для авторизации.
+
+anatolyprima
+3Z]@f9oy
+
+2 Создайте в вашем репозитории новую ветку nexus.
+
+Переходим на https://gitlab.praktikum-services.ru/anatolyprima/sausage-store, создаем из ветки main еще одну ветку nexus, далее будем работать в ней
+
+3 Создайте в Nexus два новых репозитория, под фронтенд и бэкенд, в формате: sausage-store-<фамилия-имя>-backend и sausage-store-<фамилия-имя>-frontend.
+
+Переходим на https://nexus.praktikum-services.ru, потом во вкладку - Server administration configuration - Repositories - Create repository
+
+Создаем новые репозитории для бэкенда и фронтенда:
+sausage-store-backend формата maven 2 (hosted) - sausage-store-prima-anatoly-backend
+sausage-store-frontend формата raw (hosted) - sausage-store-prima-anatoly-frontend
+
+4 Настройте сборку сосисочного магазина, чтобы новые версии бэкенда и фронтенда выкладывались в Nexus, в ранее созданный вами репозитории.
+
+Предварительно проверяем написание .gitlab-ci.ymlв CI lint. Находится во вкладке CI/CD - далее кнопка CI lint около Run pipeline
+
+Добавляем новую переменную в файл .gitlab-ci.yml сразу перед объявления stages
+
+variables:
+     VERSION: 1.0.${CI_PIPELINE_ID}
+
+stages:
+  - build
+  - release
+  - notification
+
+добавляем в строку mvn package ещё и -Dversion.application=${VERSION}
+- mvn package -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -Dversion.application=${VERSION}# запуск сборки кода
+
+везде где указана версия приложения вручную, заменяем на переменную ${VERSION}
+
+корректируем содержимое файла в репозитории backend/pom.xml - добавляем блок кода
+<!-- блок с настройкой бэкенд репозитория (Nexus) -->
+    <distributionManagement>
+    <repository>
+        <id>sausage-store</id>
+        <name>sausage-store</name>
+        <url>${NEXUS_REPO_URL_BACKEND}/</url>
+    </repository>
+    </distributionManagement>
+<!-- блок с настройкой бэкенд репозитория (Nexus) -->
+
+создаем в репозиторий файл settings.xml  данный файл предусматривается только для бэкенда
+ <settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd"
+      xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <servers>
+      <server>
+        <id>sausage-store</id>
+        <username>${NEXUS_REPO_USER}</username>
+        <password>${NEXUS_REPO_PASS}</password>
+      </server>
+    </servers>
+  </settings>
+в то же время задаем в Settings - CI/CD - Variables две глобальные переменные:
+
+${NEXUS_REPO_USER} - anatolyprima
+${NEXUS_REPO_PASS} - 3Z]@f9oy
+${NEXUS_REPO_URL_BACKEND} - https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-backend
+${NEXUS_REPO_URL_FRONTEND} - https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-frontend
+
+корректируем .gitlab-ci.yml
+
+variables:
+     VERSION: 1.0.${CI_PIPELINE_ID}
+
+stages:
+  - build
+  - release
+  - notification
+
+build-code-job:  # задача с именем build-code-job
+  stage: build   # этап build
+  script:        # объявление скрипта
+    - echo "ARTIFACT_JOB_ID=${CI_JOB_ID}" > CI_JOB_ID.txt  # сохранение номера задачи в файл,
+    чтобы в дальнейшем использовать для копирования артефакта
+    - cd backend
+    - mvn package -Dversion.application=${VERSION}
+    # запуск сборки кода
+    - cd ../frontend
+    - npm install
+    # загрузка всех сторонних зависимостей
+    - npm run build
+    # запуск сборки кода
+    - cd ..
+    - mkdir sausage-store-${VERSION}
+    # создание директории, в которую копируются артефакты.
+    # Это нужно для организации удобной структуры архива
+    - mv backend/target/sausage-store-${VERSION}.jar sausage-store-${VERSION}/sausage-store-${VERSION}.jar
+    # копирование собранного бэкенда
+    - mv frontend/dist/frontend sausage-store-${VERSION}/public_html
+    # копирование собранного фронтэнда
+  artifacts:
+    paths:
+      - sausage-store-${VERSION}/public_html
+      # сохранение собранного фронтэнда как артефакт
+      - sausage-store-${VERSION}/sausage-store-${VERSION}.jar
+      # сохранение собранного бэкенда как артефакт
+
+
+upload-release: # задача с именем upload-release
+  stage: release # этап release
+  # only: # запуск этого шага только при изменениях в директориях backend и frontend
+  #   changes:
+  #   - backend//*
+  #   - frontend//*
+
+  script:
+    - echo "Get artifact from job ${ARTIFACT_JOB_ID}"
+    - echo "version is ${VERSION}"
+
+    - tar czvf sausage-store-${VERSION}.tar.gz sausage-store-${VERSION}
+    - >
+      curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${VERSION}.tar.gz ${NEXUS_REPO_URL_FRONTEND}/sausage-store/${VERSION}/sausage-store-${VERSION}.tar.gz
+
+    - cd backend
+    - mvn -s settings.xml deploy -DskipTests
+
+
+slack-notification: # задача с именем slack-notification, отправляет уведомление в канал мессенджера Slack
+  stage: notification # этап notification
+  script:
+
+    - |
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"Вышла новая версия сосисочной — '${VERSION}'. Скачать фронт можно по ссылке — <https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-frontend/sausage-store/'${VERSION}'/sausage-store-'${VERSION}'.tar.gz%7Cfrontend-'${VERSION}'>. Скачать бэкенд можно по ссылке — <https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-backend/com/yandex/practicum/devops/sausage-store/'${VERSION}'/sausage-store-'${VERSION}'.jar%7Cbackend-'${VERSION}'>"}' https://hooks.slack.com/services/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
+
+5 Добавьте в CI, в конце пайплайна, нотификацию в Slack о выходе новой версии в формате: Вышла новая версия сосисочной — <ваша новая версия>. Скачать фронт можно по ссылке — <ссылка на фронт>. Скачать бэкенд можно по ссылке — <ссылка на бэкенд>.
+
+slack-notification: # задача с именем slack-notification, отправляет уведомление в канал мессенджера Slack
+  stage: notification # этап notification
+  script:
+
+    - |
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"Вышла новая версия сосисочной — '${VERSION}'. Скачать фронт можно по ссылке — <https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-frontend/sausage-store/'${VERSION}'/sausage-store-'${VERSION}'.tar.gz%7Cfrontend-'${VERSION}'>. Скачать бэкенд можно по ссылке — <https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-backend/com/yandex/practicum/devops/sausage-store/'${VERSION}'/sausage-store-'${VERSION}'.jar%7Cbackend-'${VERSION}'>"}' https://hooks.slack.com/services/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
+
+6 Закоммитьте все изменения и сделайте merge request в master, пришлите ссылку на merge request наставнику. (отредактировано) 

@@ -1,0 +1,106 @@
+Practice 5.2
+
+1. Создайте виртуальную машину с помощью Terraform, добавив пользователя ansible и группу ansible в создаваемую ВМ.
+
+
+
+2. Пропишите свой ssh-ключ, чтобы заходить на ВМ без пароля.
+
+	Добавляем файл  
+
+3. Добавьте в скрипт вывод IP адреса, назначенного созданной ВМ.
+
+
+
+4. Добавьте файл .gitignore так, чтобы создаваемые Terraform'ом файлы не были видны в git status
+
+
+5. Разверните ВМ с помощью Terraform, зайдите в созданную ВМ по ssh-ключу и проверьте наличие пользователя. Если пользователь присутствует, значит, предыдущие шаги выполнены верно.
+
+6. Удалите ВМ с помощью Terrafor
+
+main.tf
+
+terraform {
+  required_providers {
+    yandex = {
+      source = "yandex-cloud/yandex"
+    }
+  }
+  required_version = ">= 0.13"
+}
+
+resource "yandex_compute_instance" "vm-1" {
+  name = "chapter5-lesson2-anatolyprima"
+  resources {
+    cores  = 2
+    memory = 2
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = "fd89ka9p6idl8htbmhok"
+    }
+  }
+
+  network_interface {
+    subnet_id = "e9bdi1h4rfet06lt0dkq"
+    nat       = true
+  }
+
+  metadata = {
+    user-data = "${file("./meta.txt")}"
+  }
+}
+
+
+
+output.tf
+
+terraform {
+  required_providers {
+    yandex = {
+      source = "yandex-cloud/yandex"
+    }
+  }
+  required_version = ">= 0.13"
+}
+
+resource "yandex_compute_instance" "vm-1" {
+  name = "chapter5-lesson2-anatolyprima"
+  resources {
+    cores  = 2
+    memory = 2
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = "fd89ka9p6idl8htbmhok"
+    }
+  }
+
+  network_interface {
+    subnet_id = "e9bdi1h4rfet06lt0dkq"
+    nat       = true
+  }
+
+  metadata = {
+    user-data = "${file("./meta.txt")}"
+  }
+}
+
+
+provider.tf
+
+provider "yandex" {
+  token = var.iam_token
+  cloud_id  = "b1g3jddf4nv5e9okle7p"
+  folder_id = "b1gr94c4fmjnth6k8p36"
+  zone      = "ru-central1-a"
+}
+
+variables.tf
+
+variable "iam_token"    {
+        default = "вставить_значение_акутального_iam_токена"
+        sensitive = true

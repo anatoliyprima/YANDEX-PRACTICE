@@ -1,0 +1,62 @@
+У нас есть конфигурационный файл, содержащий основные настройки flyway.conf; также в нём можно указывать настройки подключения к базе.
+# указываем папки, в которых ведётся поиск миграцинных скриптов
+flyway.locations=filesystem:db/migration,filesystem:db/bottom
+
+# url для подключения к базе, включающий имя драйвера, хост, порт и имя базы
+flyway.url=jdbc:sqlserver://192.168.1.30:1433;database=test
+
+# путь к драйверу, который используется для подключения к базе
+# flyway.driver=
+
+# пользователь для подключения к базе
+flyway.user=user
+
+# пароль для подключения к базе
+flyway.password=sec_password
+
+# количество попыток подключения к базе
+flyway.connectRetries=3
+
+# выбираем, до какой версии выполнять миграционные скрипты
+flyway.target=4
+
+
+flyway -user=my_sql -password=23e2f345f3 -locations='filesystem:db/migration' -url="jdbc:sqlserver://192.168.1.30;database=test" -target=4  migrate
+
+Так вот, если мы настраиваем связку Flyway и Java, то необходимые зависимости добавляются в pom.xml:
+<dependencies>
+    <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>8.0.5</version>
+    </dependency>
+</dependencies>
+
+В том же pom.xml настраивается сборщик:
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-maven-plugin</artifactId>
+            <version>8.0.5</version>
+            <configuration>
+                <locations>
+                    <location>classpath:db/migration</location>
+                </locations>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+
+
+
+По умолчанию SQL-скрипты создаются в src/main/resources/db/migration.
+И далее вызываются в коде, например:
+import org.flywaydb.core.Flyway;
+
+public class App {
+    public static void main(String[] args) {
+        Flyway flyway = Flyway.configure().dataSource("jdbc:h2:file:./target/foobar", "sa", null).load();
+        flyway.migrate();
+    }
+}

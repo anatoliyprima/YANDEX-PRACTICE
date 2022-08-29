@@ -1,0 +1,16 @@
+Задание 3
+
+sudo vi /etc/systemd/system/sausage-store-backend.service
+
+[Unit]
+Description=sausage-store-backend
+
+[Service]
+User=root
+Environment=‘LOG_PATH=/var/jarservice/logs/‘
+Environment=‘REPORT_PATH=/var/www-data/htdocs/‘
+ExecStart=java -jar /var/jarservice/sausage-store-0.0.1-SNAPSHOT.jar
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

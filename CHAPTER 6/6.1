@@ -1,0 +1,21 @@
+пишем на MARKDOWN
+
+
+README.md
+
+## ИСХОДНЫЙ ЗАПРОС
+
+```bash
+select COUNT(*) from orders o INNER JOIN order_product op ON o.id = op.order_id INNER JOIN product p ON op.product_id = p.id WHERE p.id = 2;
+```
+## ИНДЕКСЫ ДЛЯ ЗАПРОСА:
+
+```bash
+CREATE INDEX orders_idx ON orders (id);
+```
+```bash
+CREATE INDEX order_product_idx ON order_product (order_id);
+```
+```bash
+CREATE INDEX product_idx ON product (id);
+```

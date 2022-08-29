@@ -1,0 +1,64 @@
+Задание 2
+
+2.1 В папке /var/www-data вы найдете файлы фронтенда
+
+#переходим в папку
+cd /var/www-data
+
+2.2 Соберите фронтенд руководствуясь инструкциями из README сосисочной - учтите, что компиляция приложения наверняка потребует прав администратора
+
+содержимое README:
+
+	cd frontend
+	npm install
+	npm run build
+	npm install -g http-server
+	sudo http-server ./dist/frontend/ -p 80 --proxy http://localhost:8080
+
+переходим в директорию с файлами фронтенда
+cd /var/www-data
+
+запускаем
+sudo npm install
+
+sudo npm run build
+
+	> frontend@0.0.0 build
+	> ng build
+
+	Date: 2022-04-09T12:23:31.101Z
+	Hash: 2417f6e368eaef834340
+	Time: 14712ms
+	chunk {main} main.js, main.js.map (main) 41.4 kB [initial] [rendered]
+	chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 227 kB [initial] [rendered]
+	chunk {runtime} runtime.js, runtime.js.map (runtime) 5.22 kB [entry] [rendered]
+	chunk {styles} styles.js, styles.js.map (styles) 160 kB [initial] [rendered]
+	chunk {vendor} vendor.js, vendor.js.map (vendor) 3.11 MB [initial] [rendered]
+
+sudo npm install -g http-server
+
+	changed 39 packages, and audited 40 packages in 4sqweqwe
+
+	9 packages are looking for funding
+	  run `npm fund` for details
+asd
+	found 0 vulnerabilities
+
+sudo http-server ./dist/frontend/ -p 80 --proxy http://localhost:8080
+
+2.3 откройте сессию screen с именем front и запустите под администратором фронтенд
+
+sudo screen -S front
+
+в открывшемся окне переходим в папку с фронтом, запускаем 
+sudo npm install -g http-server sudo http-server ./dist/frontend/ -p 80 --proxy http://localhost:8080
+
+проверяем, запустился ли фронт - переходим по адресу в магазин
+
+во втором окне проверяем название и наличие открытой сессии
+
+sudo screen -ls
+
+There is a screen on:
+	6308.front	(04/09/22 17:37:38)	(Attached)
+1 Socket in /run/screen/S-root.
