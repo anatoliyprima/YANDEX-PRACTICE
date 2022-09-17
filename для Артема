@@ -1,0 +1,22 @@
+виртуальная машина первоначальная
+student@178.154.204.171 пароль prima1984864
+
+бэкенд лежит /home/jarservice/sausage-store.jar
+
+сервис бэка /etc/systemd/system/sausage-store-backend.service
+сервис фронта /etc/systemd/system/sausage-store-frontend.service
+
+репозиторий https://gitlab.praktikum-services.ru/anatolyprima/sausage-store
+логин anatolyprima@yandex.kz
+пароль 3Z]@f9oy
+
+
+
+
+
+виртуальная машина поднятая терраформом (на данный момент основная)
+из домашней директории выполнить команду
+ssh ansible@51.250.83.34 -i /home/student/ansible_practice/infrastructure/ansible/.ssh/id_rsa_ansible
+
+сервис бэка /etc/systemd/system/backend.service
+сервис фронта /etc/systemd/system/frontend.service

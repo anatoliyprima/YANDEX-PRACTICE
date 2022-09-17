@@ -1,0 +1,43 @@
+Несу вам необходимые доступы, все нужное во вложении
+
+username = ваш привычный логин ко всем сервисам без каких-либо дополнительных символов, например
+super_devops.vanya превратится в юзернейм superdevopsvanya
+А ещё мы специально подготовили для вас уже созданный кластер баз данных в Yandex Cloud,
+поэтому в Главе 6 вам не нужно создавать собственный кластер — просто подключайтесь
+по данным авторизации для этой главы. Мы также обновили кусочек урока, который мог вводить в заблуждение.
+Что делать, если:
+вы уже создали собственный кластер — пожалуйста, обязательно переходите в специально созданный нами, личные кластеры мы начнем удалять завтра!
+не подходит юзернейм — обратитесь ко мне, я вышлю вам корректный юзернейм
+не получается подключиться/другие проблемы — как всегда, обратитесь к вашему наставнику, они помогут разобраться
+
+
+Psql:
+Установите сертификат:
+mkdir -p ~/.postgresql && \
+wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" -O ~/.postgresql/root.crt && \
+chmod 0600 ~/.postgresql/root.crt
+Пример строки подключения:
+psql "host=rc1b-hbgrshwk67xn4wfm.mdb.yandexcloud.net \
+      port=6432 \
+      sslmode=verify-full \
+      dbname=<username> \
+      user=<username> \
+      target_session_attrs=read-write"
+
+Пароль Testusr1234
+Mongo:
+Установите сертификат:
+sudo mkdir -p /usr/local/share/ca-certificates/Yandex && \
+sudo wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" -O /usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt
+Пример строки подключения:
+mongosh --norc \
+        --host 'rs01/rc1b-dkdiam8q2r06t1bi.mdb.yandexcloud.net:27018' \
+        -u <username> \
+        -p Testusr1234 \
+        <username>
+
+в строке подключения через консоль:
+
+psql postgresql://anatolyprima:Testusr1234@rc1b-hbgrshwk67xn4wfm.mdb.yandexcloud.net:6432/anatolyprima
+
+mongosh --norc --host 'rs01/rc1b-dkdiam8q2r06t1bi.mdb.yandexcloud.net:27018' -u anatolyprima -p Testusr1234 anatolyprima --tls --tlsCAFile /usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt

@@ -1,8 +1,49 @@
 Practice 5.2
 
+! ! !  П О Д Г О Т О В И Т Е Л Ь Н Ы Е  М Е Р О П Р И Я Т И Я  ! ! !
+
+Перед написанием файла main.tf следует получить все необходимые параметры:
+
+Для начала нужно провести инициализацию на своей машине.
+По уроку нам дается federation-id bpfpfctkh7focc85u9sq
+
+
+init --federation-id=bpfpfctkh7focc85u9sq
+
+You have one cloud available: 'cloud-praktikumdevopscourse' (id = b1g3jddf4nv5e9okle7p). It is going to be used by default.
+Please choose folder to use:
+ [1] students-07 (id = b1gtmbcndh33d9sk2b5i)
+ [2] Create a new folder
+
+отсюда получаем 		cloud_id 		= "b1g3jddf4nv5e9okle7p"
+										folder_id 	= "b1gtmbcndh33d9sk2b5i"
+
+Which zone do you want to use as a profile default?
+[1] ru-central1-a
+[2] ru-central1-b
+[3] ru-central1-c
+[4] Don't set default zone
+
+Выбираю 1
+
+Далее проверяю id выбранной зоны, для ru-central1-a он будет e9b1q4ldhksoc83ppj87
+
+anatoliyprima:~ anatoliy$ yc vpc subnets list
++----------------------+-----------------------+----------------------+----------------+---------------+-----------------+
+|          ID          |         NAME          |      NETWORK ID      | ROUTE TABLE ID |     ZONE      |      RANGE      |
++----------------------+-----------------------+----------------------+----------------+---------------+-----------------+
+| b0cg90i6prk3urg2phm0 | default-ru-central1-c | enp0f4qgd746pp8i4lqm |                | ru-central1-c | [10.130.0.0/24] |
+| e2l4ck13qo52mn9ue7b0 | default-ru-central1-b | enp0f4qgd746pp8i4lqm |                | ru-central1-b | [10.129.0.0/24] |
+| e9b1q4ldhksoc83ppj87 | default-ru-central1-a | enp0f4qgd746pp8i4lqm |                | ru-central1-a | [10.128.0.0/24] |
++----------------------+-----------------------+----------------------+----------------+---------------+-----------------+
+
+
+
+
+
+
+
 1. Создайте виртуальную машину с помощью Terraform, добавив пользователя ansible и группу ansible в создаваемую ВМ.
-
-
 
 2. Пропишите свой ssh-ключ, чтобы заходить на ВМ без пароля.
 
@@ -15,9 +56,10 @@ Practice 5.2
 4. Добавьте файл .gitignore так, чтобы создаваемые Terraform'ом файлы не были видны в git status
 
 
-5. Разверните ВМ с помощью Terraform, зайдите в созданную ВМ по ssh-ключу и проверьте наличие пользователя. Если пользователь присутствует, значит, предыдущие шаги выполнены верно.
+5. Разверните ВМ с помощью Terraform, зайдите в созданную ВМ по ssh-ключу и проверьте наличие пользователя.
+Если пользователь присутствует, значит, предыдущие шаги выполнены верно.
 
-6. Удалите ВМ с помощью Terrafor
+6. Удалите ВМ с помощью Terraform
 
 main.tf
 

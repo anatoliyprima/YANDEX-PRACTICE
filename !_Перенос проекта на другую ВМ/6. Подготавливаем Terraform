@@ -1,0 +1,56 @@
+Перед выполнением заданий с Terraform, вам нужно сделать пару дополнительных шагов:
+
+на локальной машине:
+
+yc init --federation-id=bpfpfctkh7focc85u9sq
+Welcome! This command will take you through the configuration process.
+Pick desired action:
+ [1] Re-initialize this profile 'default' with new settings
+ [2] Create a new profile
+Please enter your numeric choice: 1
+You have one cloud available: 'cloud-praktikumdevopscourse' (id = b1g3jddf4nv5e9okle7p). It is going to be used by default.
+Please choose folder to use:
+ [1] students-05 (id = b1g12usbo8ah1taf4bfb)
+ [2] students-07 (id = b1gtmbcndh33d9sk2b5i)
+ [3] Create a new folder
+Please enter your numeric choice: 2
+Your current folder has been set to 'students-07' (id = b1gtmbcndh33d9sk2b5i).
+Do you want to configure a default Compute zone? [Y/n] Y
+Which zone do you want to use as a profile default?
+ [1] ru-central1-a
+ [2] ru-central1-b
+ [3] ru-central1-c
+ [4] Don't set default zone
+Please enter your numeric choice: 1
+Your profile default Compute zone has been set to 'ru-central1-a'.
+
+
+Скачиваем Terraform из зеркала Yandex Cloud.
+
+переходим сюда, выбираем версию https://hashicorp-releases.yandexcloud.net/terraform/
+
+скачиваем на ВМ
+wget https://hashicorp-releases.yandexcloud.net/terraform/1.1.9/terraform_1.1.9_linux_amd64.zip .
+
+
+если распаковать архив нечем, то скачиваем утилиту unzip
+sudo apt install unzip
+
+распаковываем архив в текущую папку
+
+
+После загрузки добавить путь к папке с исполняемым файлом в переменную PATH: export PATH=$PATH:/path/to/terraform
+
+Указать источник установки провайдера, добавив следующую конфигурацию в файл ~/.terraformrc:
+
+!!! файл .terraformrc должен лежать в домашней директории пользователя, из под которого будет запускаться терраформ !!!
+
+provider_installation {
+  network_mirror {
+    url = "https://terraform-mirror.yandexcloud.net/"
+    include = ["registry.terraform.io/*/*"]
+  }
+  direct {
+    exclude = ["registry.terraform.io/*/*"]
+  }
+}

@@ -1,0 +1,4 @@
+скачать yc-tools
+curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+
+yc init --federation-id=bpfpfctkh7focc85u9sq

@@ -1,0 +1,28 @@
+создаем двух пользователей:
+
+sudo adduser front-user
+sudo adduser jarservice
+
+команда adduser добавит каждому из пользователей свою домашнюю директорию
+
+
+так же для работы фронтенда нужно создать следующие директории
+
+создаем директорию для фронтенда
+sudo mkdir -p /var/www-data/dist/frontend
+меняем права на директорию для пользователя front-user
+sudo chown front-user:front-user /var/www-data/dist/frontend/
+
+
+
+
+
+
+
+создаем директории для бэкенда
+sudo mkdir -p /var/www-data/htdocs
+меняем права на директорию для пользователя jarservice
+sudo chown jarservice:jarservice /var/www-data/htdocs
+
+создаем директориб для логов
+sudo mkdir /logs

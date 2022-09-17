@@ -1,0 +1,60 @@
+[Unit]
+Description=backend-service
+
+[Service]
+#пользователь, под которым будет запускаться сервис бэкенда
+User=jarservice
+
+#директория, куда будут отправляться логи с джарника
+Environment='LOG_PATH=/'
+
+#директория, куда будут отправляться репорты с джарника
+Environment='REPORT_PATH=/var/www-data/htdocs/'
+
+#переменные для подключения к postgresql, пока хардкод
+Environment=PSQL_HOST=rc1b-hbgrshwk67xn4wfm.mdb.yandexcloud.net
+Environment=PSQL_PORT=6432
+Environment=PSQL_DBNAME=anatolyprima
+Environment=PSQL_USER=anatolyprima
+Environment=PSQL_PASSWORD=Testusr1234
+
+#переменные для подключения к mongo, пока хардкод
+Environment=MONGO_USER=anatolyprima
+Environment=MONGO_PASSWORD=Testusr1234
+Environment=MONGO_HOST=rc1b-dkdiam8q2r06t1bi.mdb.yandexcloud.net
+Environment=MONGO_DATABASE=anatolyprima
+
+#запуск бэкенда без доп параметров
+ExecStart=java -jar /home/jarservice/sausage-store.jar \
+
+#директория, из которой будет запускаться приложение
+ -Dmyserver.basePath='/home/jarservice \
+ -Dmyserver.bindAddr='127.0.0.1' \
+#порт, на котором будет запускаться приложение
+ -Dmyserver.bindPort='8080' \
+#имя хоста
+ -Dmyserver.hostName='sausage-store' \
+#строка подключения к базе данных postgresql
+#переменные указываются в Environments
+ -Dspring.datasource.url=jdbc:postgresql://${PSQL_HOST}:${PSQL_PORT}/${PSQL_DBNAME} \
+ -Dspring.datasource.username=${PSQL_USER} \
+ -Dspring.datasource.password=${PSQL_PASSWORD} \
+
+
+StandardOutput=file:/home/jarservice/standard_log.log
+#директория, куда будут выводить логи с ошибками
+StandardError=file:/home/jarservice/errors_log.log
+
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-backend
+
+
+
+
+curl -u anatolyprima:3Z]@f9oy -o sausage-store.jar https://nexus.praktikum-services.ru/repository/sausage-store-prima-anatoly-backend/com/yandex/practicum/devops/sausage-store/1.0.172022/sausage-store-1.0.172022.jar

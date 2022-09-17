@@ -1,0 +1,61 @@
+принес вам вм на замену (виртуалка в облаке 7 когорты):
+"student-vm-02-reserve -> 84.201.134.214"
+
+логин student
+пароль student
+
+после первого подключения требуется сменить пароль, меняем его на prima1984864
+теперь, требуется установить подключения между машинами по shh-ключам
+для этого на виртуалке, К КОТОРОЙ будем подключаться, в домашней директории
+нашего пользователя, создаем папку .ssh и внутрь кладем публичный ключ с
+и внутрь кладем публичный ключ в файл authorized_keys
+
+Сам же ключ получаем на той машине, с которой будем подключаться.
+Генерируем связку публичного и приватного ключей на локальной машине
+
+приватный ключ
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn
+NhAAAAAwEAAQAAAQEAyF0hkM8OlGOUXs63yhHGql5FE6zdgoisfTD/7VsnXOcjWz4IooDK
+faZISntxrlSIn7/1yUF2X9qli+12TknuQiEHmntpJLKf0u+gBZk2otUpZ34HDFxYp0hZun
+zbRLbf+865z787SqgVq2lPg6iPX0BEBrKQUu7oN7G4qTNt55djrBC2LN+260q6sS56Aw5G
+rtUpaGlmpz0ljnzi/4o6kJe6S0en2NT6Lv60SRs3K0bvTWHr07FCyoJr5i2xbPFXAQEQJw
+6OGjzoxQRfGHgJl9sy+1h8Q+HBe9umVWQmRBfxO9L9xHTE47F3RB2unmfRLx8sO3hLv2wy
+p+fcct11aQAAA+CZ1r0ymda9MgAAAAdzc2gtcnNhAAABAQDIXSGQzw6UY5RezrfKEcaqXk
+UTrN2CiKx9MP/tWydc5yNbPgiigMp9pkhKe3GuVIifv/XJQXZf2qWL7XZOSe5CIQeae2kk
+sp/S76AFmTai1SlnfgcMXFinSFm6fNtEtt/7zrnPvztKqBWraU+DqI9fQEQGspBS7ug3sb
+ipM23nl2OsELYs37brSrqxLnoDDkau1SloaWanPSWOfOL/ijqQl7pLR6fY1Pou/rRJGzcr
+Ru9NYevTsULKgmvmLbFs8VcBARAnDo4aPOjFBF8YeAmX2zL7WHxD4cF726ZVZCZEF/E70v
+3EdMTjsXdEHa6eZ9EvHyw7eEu/bDKn59xy3XVpAAAAAwEAAQAAAQBhSDaf5Kiji6XiUmQS
+DId0+Mh5QRlb45g8QKpCSFvYU7Fq/7eZjwbB8xZuc3lCt3COf9mKmeorqDFwux8R6/tuyD
+K04u6uDrxi4k3D6hwI+45a3Wn2qm+w6QQH889Skag2zqyRHbxgBzReQYeF2TWjfcSJq/E/
+ExhU0klifcIDCzUjs0w7G4zO3hB1+c1F8ySVba6lcwbGj5sckfOhx/9s+zScd/1ZYlq7NV
+4HNpIKiOSVrp7zyUS9Rx6wqYqtEnIeBcrgsBxKXCKNHAb6BMj7tnNuIqjxr2HUSoRp5Qc0
+v3+Wf2M+l9mQmvvs4ra6vbkKkmPZBF0L0LVdvAdtFDzxAAAAgQD2aE+yLrMIe1tUKdnZxn
+FLvgRvByWNY6y78B8wjLK8PZy9pKgVS92l/sL6dz7pli6OW6/ZK++/5lyjs+DCL4G38pEU
+ea+sZ9ArGDxLEyg2n3Ele7bi3bsxKsKLyBm5Kag67XknIt4GY10RsHxxpx6/K9/LgwbDry
+XlMKSGYePDJAAAAIEA+mxThZktJ5lyYzpgTF1lNfxdS9YMnJDy0NB+OY8kVNokxDl2IKbs
+A0VXkjZEK3O8feExUw1nxBybtObI5k3NX0MzbgaaPZCtKTzP1cLhdc7Gl5n26S4mpjI5BF
+SH6lcp187OUpE8TcnuWpm9jYZLHGqtd5xPuJiFrVSqNmIpvecAAACBAMzTagjYoYlpP/AQ
+7yt+NACiXAdAzWOT5+hznaqqAUosiECSP4IZbDKgy1Oo7W8EyKfy37BHjnRcY0muMvuIdb
+8I4d4wU+aDYRxMxz/AhxL1+kHx0y5SxpEjHKAZ8yuYbuKSxlovPMa2erNOUQoa8L+kZX1O
+rAzDOMQXNkUYTKgvAAAAI2FuYXRvbGl5QE1hY0Jvb2stUHJvLUFuYXRvbGl5LmxvY2FsAQ
+IDBAUGBw==
+-----END OPENSSH PRIVATE KEY-----
+
+публичный ключ
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIXSGQzw6UY5RezrfKEcaqXkUTrN2CiKx9MP/tWydc5yNbPgiigMp9pkhKe3GuVIifv/XJQXZf2qWL7XZOSe5CIQeae2kksp/S76AFmTai1SlnfgcMXFinSFm6fNtEtt/7zrnPvztKqBWraU+DqI9fQEQGspBS7ug3sbipM23nl2OsELYs37brSrqxLnoDDkau1SloaWanPSWOfOL/ijqQl7pLR6fY1Pou/rRJGzcrRu9NYevTsULKgmvmLbFs8VcBARAnDo4aPOjFBF8YeAmX2zL7WHxD4cF726ZVZCZEF/E70v3EdMTjsXdEHa6eZ9EvHyw7eEu/bDKn59xy3XVp anatoliy@MacBook-Pro-Anatoliy.local
+
+!!! теперь публичный ключ отправляется на подключаемую машину !!!
+
+ПОДКЛЮЧАЕМСЯ К МАШИНЕ
+ssh student@84.201.134.214
+
+на подключаемой машине переходим в директорию
+cd /home/student/.ssh
+
+там создаем файл
+vi authorized_keys
+копируем в него содержимое публичного ключа
+
+все, с подключением закончено. Можно подключаться без пароля, теперь по ssh-ключу

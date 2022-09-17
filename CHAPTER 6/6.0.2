@@ -33,6 +33,19 @@ psql postgresql://$PSQL_USER:$PSQL_PASSWORD@$PSQL_HOST:$PSQL_PORT/$PSQL_DBNAME
 
 psql postgresql://anatolyprima:Testusr1234@rc1a-nk612bm46ahukyu4.mdb.yandexcloud.net:6432/anatolyprima
 
+!!! в новой когорте 7 !!!
+
+psql postgresql://anatolyprima:Testusr1234@rc1b-hbgrshwk67xn4wfm.mdb.yandexcloud.net:6432/anatolyprima
+
+
+psql "host=rc1b-hbgrshwk67xn4wfm.mdb.yandexcloud.net \
+      port=6432 \
+      sslmode=verify-full \
+      dbname=<username> \
+      user=<username> \
+      target_session_attrs=read-write"
+
+
 psql (12.11 (Ubuntu 12.11-0ubuntu0.20.04.1), server 14.4 (Ubuntu 14.4-201-yandex.52448.a37cfc9be3))
 WARNING: psql major version 12, server major version 14.
          Some psql features might not work.

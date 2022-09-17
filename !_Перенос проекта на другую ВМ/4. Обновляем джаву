@@ -1,0 +1,44 @@
+при запуске приложение вылетает ошибка
+
+Exception in thread "main" java.lang.UnsupportedClassVersionError:
+com/yandex/practicum/devops/SausageApplication has been compiled by a
+more recent version of the Java Runtime (class file version 60.0),
+this version of the Java Runtime only recognizes class file versions up to 55.0
+
+проверяем что можно сделать, чтобы от этой ошибки избавиться
+
+Для начала проверяем какие версии джавы у нас есть
+
+update-java-alternatives --list
+java-1.11.0-openjdk-amd64      1111       /usr/lib/jvm/java-1.11.0-openjdk-amd64
+java-1.16.0-openjdk-amd64      1611       /usr/lib/jvm/java-1.16.0-openjdk-amd64
+
+java --version
+openjdk 11.0.13 2021-10-19
+OpenJDK Runtime Environment (build 11.0.13+8-Ubuntu-0ubuntu1.20.04)
+OpenJDK 64-Bit Server VM (build 11.0.13+8-Ubuntu-0ubuntu1.20.04, mixed mode, sharing)
+
+как видим - версий джавы 2, а используется сейчас версия 11
+
+вводим:
+sudo update-alternatives --config java
+
+получаем:
+There are 2 choices for the alternative java (providing /usr/bin/java).
+
+  Selection    Path                                         Priority   Status
+------------------------------------------------------------
+  0            /usr/lib/jvm/java-16-openjdk-amd64/bin/java   1611      auto mode
+* 1            /usr/lib/jvm/java-11-openjdk-amd64/bin/java   1111      manual mode
+  2            /usr/lib/jvm/java-16-openjdk-amd64/bin/java   1611      manual mode
+
+Press <enter> to keep the current choice[*], or type selection number: 2
+update-alternatives: using /usr/lib/jvm/java-16-openjdk-amd64/bin/java to provide /usr/bin/java (java) in manual mode
+
+проверяем версия джавы:
+java --version
+openjdk 16.0.1 2021-04-20
+OpenJDK Runtime Environment (build 16.0.1+9-Ubuntu-120.04)
+OpenJDK 64-Bit Server VM (build 16.0.1+9-Ubuntu-120.04, mixed mode, sharing)
+
+Выбранная 16 версия теперь используется по умолчанию
