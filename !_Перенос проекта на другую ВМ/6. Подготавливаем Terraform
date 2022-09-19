@@ -3,6 +3,7 @@
 на локальной машине:
 
 yc init --federation-id=bpfpfctkh7focc85u9sq
+
 Welcome! This command will take you through the configuration process.
 Pick desired action:
  [1] Re-initialize this profile 'default' with new settings
@@ -31,6 +32,9 @@ Your profile default Compute zone has been set to 'ru-central1-a'.
 
 скачиваем на ВМ
 wget https://hashicorp-releases.yandexcloud.net/terraform/1.1.9/terraform_1.1.9_linux_amd64.zip .
+
+
+wget https://hashicorp-releases.yandexcloud.net/terraform/1.2.9/terraform_1.2.9_darwin_amd64.zip .
 
 
 если распаковать архив нечем, то скачиваем утилиту unzip

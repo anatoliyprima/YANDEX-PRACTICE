@@ -1,3 +1,8 @@
+
+
+
+
+
 корректируем имеющийся юнит файл для бэкенда
 
 добавляем строки подключения к базам данных
@@ -14,3 +19,29 @@
 
 
 db.clients.insertOne {name: "Anatoliy", order: [{name_product: "name_product", count: Int32}], time: Date}
+
+
+
+качаем сертификат
+
+sudo mkdir -p /usr/local/share/ca-certificates/Yandex && \
+sudo wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" -O /usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt
+
+
+подключаемся к БД
+mongosh --norc --host 'rs01/rc1b-dkdiam8q2r06t1bi.mdb.yandexcloud.net:27018' -u anatolyprima -p Testusr1234 anatolyprima --tls --tlsCAFile /usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt
+
+проверяем какие БД есть
+show dbs
+
+подключаемся к своей БД
+use anatolyprima
+
+проверяем какие коллекции есть
+show collections
+
+
+
+
+tail -30 /usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt | tee /tmp/YandexInternalRootCA.crt
+sudo keytool -import -trustcacerts -alias YandexInternalRootCA -file /tmp/YandexInternalRootCA.crt -keystore /etc/ssl/certs/java/cacerts -storepass changeit
