@@ -1,0 +1,189 @@
+Задание 2
+
+Внимание: не нужно создавать новый сервисный аккаунт,
+используйте s3-user-<номер когорты>.
+Для создания ключа в правом верхнем углу выберите «Создать новый ключ» —
+«Создать статический новый ключ». В качестве описания используйте своё имя и
+фамилию (например, ivan-ivanov), чтобы отличать его среди других ключей.
+Сохраните полученную информацию.
+
+Необходимо настроить синхронизацию между локальным и облачным S3-хранилищем.
+
+Для этого нужно развернуть локальное хранилище S3, используя популярное и
+несложное решение MinIO. Разверните MinIO на своей виртуальной машине в
+Docker-контейнере. Для вывода веб-интерфейса в интернет используйте
+прокси на базе Nginx.
+
+Если вдаваться в детали, то вы помните, что один из простейших способов
+синхронизации каталогов в Linux — утилита rsync, которую можно добавить в
+планировщик cron для регулярного выполнения синхронизации. Для работы с
+S3-хранилищами используйте rclone, которая будет их синхронизировать,
+а добавление запуска утилиты в cron позволит делать это регулярно.
+
+Теперь к заданию:
+
+1. На вашей ВМ, используя Docker, настройте хранилище MinIO в режиме Standalone.
+
+mkdir -p ~/minio/data
+
+docker run --rm -d \
+   -p 9000:9000 \
+   -p 9090:9090 \
+   --name minio \
+   -v ~/minio/data:/data \
+   -e "MINIO_ROOT_USER=student" \
+   -e "MINIO_ROOT_PASSWORD=student1234" \
+   quay.io/minio/minio server /data --console-address ":9090"
+
+подключиться к веб-интерфейсу по ip и порту
+
+2. Изучите интерфейс MinIO. Создайте корзину и загрузите несколько файлов.
+
+
+
+3. Создайте корзину S3 в Яндекс.Облаке. Настройте служебную учётную запись
+для доступа к корзине (роль storage.editor - роль devops-editor-7).
+
+Идентификатор ключа:
+YCAJEflKtRbj59aKxtYBMtUGm
+Ваш секретный ключ:
+YCNxQ20UCCYbcYcCizNihbMY6_14KVtdN7ON-M8o
+Сохраните идентификатор и ключ. После закрытия диалога значение ключа будет недоступно.
+
+
+4. Установите rclone и настройте доступ к обоим хранилищам в интерактивном
+режиме или используя конфигурационный файл ~/.config/rclone/rclone.conf
+
+bw5J0HfVEzB1SX8J
+ZGn8TwTcr7FPU0MfqIynuQ5EAHjBuOQ3
+
+
+
+
+
+
+sudo apt install rclone
+
+содержимое конфига ~/.config/rclone/rclone.conf
+
+[minio]
+type = s3
+provider = Minio
+env_auth = false
+access_key_id = bw5J0HfVEzB1SX8J
+secret_access_key = ZGn8TwTcr7FPU0MfqIynuQ5EAHjBuOQ3
+region = yc-practicum
+endpoint = http://127.0.0.1:9000
+location_constraint =
+server_side_encryption =
+[yandex]
+type = s3
+provider = Other
+access_key_id = YCAJEflKtRbj59aKxtYBMtUGm
+secret_access_key = YCNxQ20UCCYbcYcCizNihbMY6_14KVtdN7ON-M8o
+endpoint = https://storage.yandexcloud.net
+
+
+5. Синхронизируйте корзину в Minio c корзиной в Яндекс.Облаке.
+
+rclone copy /path/to/files minio:bucket
+
+в нашем случае:
+rclone copy yandex:anatolyprima-sausage-store/images minio:sausage-store
+
+
+6. Проверьте, что в облачной корзине появились файлы из локальной корзины.
+[По желанию] Настройте синхронизацию по расписанию, используя cron.
+Расписание устанавливается по своему усмотрению.
+
+
+подключаем контейнер с Nginx. Используем docker-compose
+
+!!! docker-compose.yaml: !!!
+
+version: '3'
+
+services:
+
+  nginx:
+    image: nginx:1.19.7
+    container_name : nginx
+    restart: always
+    volumes:
+      - ~/minio/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - nginx_minio
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server --console-address ":9090" /data
+    volumes:
+     - ~/minio/data:/data
+    environment:
+     MINIO_ROOT_USER=student
+     MINIO_ROOT_PASSWORD=student1234
+    ports:
+      - "9000"
+      - "9090:9090"
+    networks:
+     - nginx_minio
+
+networks:
+  nginx_minio:
+    name: nginx_minio
+    driver: bridge
+
+
+!!! конфиг Nginx. файл nginx.conf !!!
+
+
+worker_processes  auto;
+events {
+   worker_connections 1024;
+   use epoll;
+   multi_accept on;
+   }
+
+http {
+   tcp_nopush on;
+   tcp_nodelay on;
+   client_max_body_size 300m;
+   client_body_buffer_size 4096m;
+   proxy_max_temp_file_size 0;
+
+   server {
+      listen 80;
+      server_name 178.154.206.140;
+
+      # To allow special characters in headers
+      ignore_invalid_headers off;
+      # Allow any size file to be uploaded.
+      # Set to a value such as 1000m; to restrict file size to a specific value
+      client_max_body_size 0;
+      # To disable buffering
+      proxy_buffering off;
+
+    location / {
+       proxy_set_header X-Real-IP $remote_addr;
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       proxy_set_header X-Forwarded-Proto $scheme;
+       proxy_set_header Host $http_host;
+
+       proxy_connect_timeout 300;
+       # Default is HTTP/1, keepalive is only enabled in HTTP/1.1
+       proxy_http_version 1.1;
+       proxy_set_header Connection "";
+       chunked_transfer_encoding off;
+
+       proxy_pass http://minio:9000; # If you are using docker-compose this would be the hostname i.e. minio
+       # Health Check endpoint might go here. See https://www.nginx.com/resources/wiki/modules/healthcheck/
+       # /minio/health/live;
+     }
+    }
+   }
+
+7. Для проверки выполнения задания необходимо выслать наставнику IP-адрес виртуальной машины через https://.

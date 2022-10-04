@@ -9,6 +9,7 @@ sudo adduser jarservice
 так же для работы фронтенда нужно создать следующие директории
 
 создаем директорию для фронтенда
+sudo mkdir -p /var/www-data/dist/
 sudo mkdir -p /var/www-data/dist/frontend
 меняем права на директорию для пользователя front-user
 sudo chown front-user:front-user /var/www-data/dist/frontend/

@@ -1,0 +1,62 @@
+Давайте узнаем, какие контрольные группы существуют:
+
+cd /sys/fs/cgroup/
+ll
+
+total 0
+drwxr-xr-x 15 root root 380 Sep  5 02:49 ./
+drwxr-xr-x  8 root root   0 Sep  5 02:49 ../
+dr-xr-xr-x  2 root root   0 Sep  5 02:49 blkio/
+lrwxrwxrwx  1 root root  11 Sep  5 02:49 cpu -> cpu,cpuacct/
+dr-xr-xr-x  2 root root   0 Sep  5 02:49 cpu,cpuacct/
+lrwxrwxrwx  1 root root  11 Sep  5 02:49 cpuacct -> cpu,cpuacct/
+dr-xr-xr-x  2 root root   0 Sep  5 02:49 cpuset/
+dr-xr-xr-x  5 root root   0 Sep  5 02:49 devices/
+dr-xr-xr-x  2 root root   0 Sep  5 02:49 freezer/
+dr-xr-xr-x  2 root root   0 Sep  5 02:49 hugetlb/
+dr-xr-xr-x  5 root root   0 Sep  5 02:49 memory/
+lrwxrwxrwx  1 root root  16 Sep  5 02:49 net_cls -> net_cls,net_prio/
+dr-xr-xr-x  2 root root   0 Sep  5 02:49 net_cls,net_prio/
+lrwxrwxrwx  1 root root  16 Sep  5 02:49 net_prio -> net_cls,net_prio/
+dr-xr-xr-x  2 root root   0 Sep  5 02:49 perf_event/
+dr-xr-xr-x  5 root root   0 Sep  5 02:49 pids/
+dr-xr-xr-x  2 root root   0 Sep  5 02:49 rdma/
+dr-xr-xr-x  5 root root   0 Sep  5 02:49 systemd/
+dr-xr-xr-x  5 root root   0 Sep  5 02:49 unified/
+
+Теперь сменим пользователя на root и попробуем создать свой подкаталог:
+
+sudo mkdir anatolyprima.slice
+cd anatolyprima.slice/
+ll
+
+total 0
+drwxr-xr-x 2 root root 0 Sep 19 00:56 ./
+dr-xr-xr-x 6 root root 0 Sep  5 02:49 ../
+-rw-r--r-- 1 root root 0 Sep 19 00:56 cgroup.clone_children
+--w--w--w- 1 root root 0 Sep 19 00:56 cgroup.event_control
+-rw-r--r-- 1 root root 0 Sep 19 00:56 cgroup.procs
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.failcnt
+--w------- 1 root root 0 Sep 19 00:56 memory.force_empty
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.failcnt
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.limit_in_bytes
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.max_usage_in_bytes
+-r--r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.slabinfo
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.tcp.failcnt
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.tcp.limit_in_bytes
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.tcp.max_usage_in_bytes
+-r--r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.tcp.usage_in_bytes
+-r--r--r-- 1 root root 0 Sep 19 00:56 memory.kmem.usage_in_bytes
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.limit_in_bytes
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.max_usage_in_bytes
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.move_charge_at_immigrate
+-r--r--r-- 1 root root 0 Sep 19 00:56 memory.numa_stat
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.oom_control
+---------- 1 root root 0 Sep 19 00:56 memory.pressure_level
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.soft_limit_in_bytes
+-r--r--r-- 1 root root 0 Sep 19 00:56 memory.stat
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.swappiness
+-r--r--r-- 1 root root 0 Sep 19 00:56 memory.usage_in_bytes
+-rw-r--r-- 1 root root 0 Sep 19 00:56 memory.use_hierarchy
+-rw-r--r-- 1 root root 0 Sep 19 00:56 notify_on_release
+-rw-r--r-- 1 root root 0 Sep 19 00:56 tasks
