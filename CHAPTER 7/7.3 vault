@@ -1,0 +1,5 @@
+в vault нужно внести 3 переменные в секрет
+
+spring.data.mongodb.uri mongodb://anatolyprima:Testusr1234@rc1b-dkdiam8q2r06t1bi.mdb.yandexcloud.net:27018/anatolyprima?tls=true&replicaSet=rs01
+spring.datasource.password Testusr1234
+spring.datasource.username anatolyprima
