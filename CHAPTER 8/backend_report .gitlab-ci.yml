@@ -1,0 +1,88 @@
+#тестовый коммит для проверки отката
+variables:
+   VERSION: ${CI_PIPELINE_ID}
+   #версия для тестов деплоя
+   #VERSION: 1.0.74422
+   MAVEN_REPO_PATH: ./.m2/repository
+   JAVA_OPTS: -XX:MaxRAMPercentage=90
+   FLYWAY_PASSWORD: ${FLYWAY_PASSWORD_GITLAB}
+
+# В нашем Gitlab для сборки контейнеров воспользуемся Докером в Докере :)
+# https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-kubernetes-executor-with-docker-in-docker
+# Для сборки образов с использованием Docker-in-Docker:
+# добавить в код Downstream пайплайнов в секцию include подготовленный шаблон, содержащий необходимые настройки:
+#  https://gitlab.praktikum-services.ru/templates/ci/-/blob/main/DockerInDockerTemplate.yml
+# использовать в задачах сборки в качестве образа стабильную версию образа Docker:dind docker:20.10.12-dind-rootless
+#
+include:
+  - project: 'templates/ci'
+    file: 'DockerInDockerTemplate.yml'
+
+stages:
+  - build
+  - release
+  - deploy
+
+build-backend-report:
+  stage: build
+  image: docker:20.10.12-dind-rootless
+  before_script:
+    - until docker info; do sleep 1; done
+    # переменные CI_REGISTRY_USER, CI_REGISTRY_PASSWORD, CI_REGISTRY генерятся Гитлабом, их задавать не надо
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd backend-report
+    - >
+      docker build
+      --build-arg VERSION=$VERSION
+      --tag $CI_REGISTRY_IMAGE/sausage-backend-report:$CI_COMMIT_SHA
+      --
+      .
+    - docker push $CI_REGISTRY_IMAGE/sausage-backend-report:$CI_COMMIT_SHA
+
+upload-backend-report-latest:
+  variables:
+    GIT_STRATEGY: none
+  image: docker:20.10.12-dind-rootless
+  stage: release
+  before_script:
+    - until docker info; do sleep 1; done
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/sausage-backend-report:$CI_COMMIT_SHA
+    # если образ прошел проверки в CI (сканирование, тесты и т.д), то тегаем latest
+    - docker tag $CI_REGISTRY_IMAGE/sausage-backend-report:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/sausage-backend-report:latest
+    - docker push $CI_REGISTRY_IMAGE/sausage-backend-report:latest
+
+deploy-backend-report:
+  stage: deploy
+  image: alpine:3.15.0
+  # если хотим сделать деплой по кнопке
+  #rules:
+  #  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  #    when: manual
+  #  - if: '$CI_COMMIT_BRANCH == "main"'
+  #    when: manual
+
+  when: manual
+
+
+  before_script:
+    - apk add openssh-client bash
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - scp ./docker-compose.yml ${DEV_USER}@${DEV_HOST}:/home/${DEV_USER}/docker-compose.yml
+    - ssh ${DEV_USER}@${DEV_HOST}
+      "export "VERSION=${VERSION}";
+      export "SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}"
+      export "SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}"
+      export "GITLAB_DEPLOY_TOKEN=${GITLAB_DEPLOY_TOKEN}";
+      export "CI_REGISTRY=${CI_REGISTRY}";
+      export "SPRING_FLYWAY_ENABLED=${SPRING_FLYWAY_ENABLED}";
+      export "VAULT_TOKEN"=${VAULT_TOKEN};
+      setsid /bin/bash -s " < ./backend-report/backend_report_deploy.sh

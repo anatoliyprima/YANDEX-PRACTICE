@@ -1,0 +1,70 @@
+variables:
+   VERSION: ${CI_PIPELINE_ID}
+
+include:
+  - project: 'templates/ci'
+    file: 'DockerInDockerTemplate.yml'
+
+stages:
+  - build
+  - release
+  - deploy
+
+build-frontend:
+  stage: build
+  image: docker:20.10.12-dind-rootless
+  before_script:
+    - until docker info; do sleep 1; done
+    # переменные CI_REGISTRY_USER, CI_REGISTRY_PASSWORD, CI_REGISTRY генерятся Гитлабом, их задавать не надо
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd frontend
+    - >
+      docker build
+      --build-arg VERSION=$VERSION
+      --tag $CI_REGISTRY_IMAGE/sausage-frontend:$CI_COMMIT_SHA
+      --
+      .
+    - docker push $CI_REGISTRY_IMAGE/sausage-frontend:$CI_COMMIT_SHA
+
+upload-frontend-latest:
+  variables:
+    GIT_STRATEGY: none
+  image: docker:20.10.12-dind-rootless
+  stage: release
+  before_script:
+    - until docker info; do sleep 1; done
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/sausage-frontend:$CI_COMMIT_SHA
+    # если образ прошел проверки в CI (сканирование, тесты и т.д), то тегаем latest
+    - docker tag $CI_REGISTRY_IMAGE/sausage-frontend:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/sausage-frontend:latest
+    - docker push $CI_REGISTRY_IMAGE/sausage-frontend:latest
+
+deploy-frontend:
+  stage: deploy
+  image: alpine:3.15.0
+  # если хотим сделать деплой по кнопке
+  #rules:
+  #  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  #    when: manual
+  #  - if: '$CI_COMMIT_BRANCH == "docker"'
+  #    when: manual
+
+  when: manual
+
+  before_script:
+    - apk add openssh-client bash
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - scp ./docker-compose.yml ${DEV_USER}@${DEV_HOST}:/home/${DEV_USER}/docker-compose.yml
+    - ssh ${DEV_USER}@${DEV_HOST}
+      "export "VERSION=${VERSION}";
+      export "GITLAB_DEPLOY_TOKEN=${GITLAB_DEPLOY_TOKEN}";
+      export "CI_REGISTRY=${CI_REGISTRY}";
+      setsid /bin/bash -s " < ./frontend/frontend_deploy.sh
