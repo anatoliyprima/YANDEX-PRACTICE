@@ -1,0 +1,2 @@
+docker run -d -e DEFAULT_HOST=myproxy -v /var/run/docker.sock:/tmp/docker.sock:ro -v /var/www-data/dist/frontend:/usr/share/nginx/html -v /home/student/default.conf:/etc/nginx/conf.d/default.conf -p 8080:80  --name nginx nginxproxy/nginx-proxy
+docker exec -it nginx /bin/bash

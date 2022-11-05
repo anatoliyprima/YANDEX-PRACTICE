@@ -1,0 +1,35 @@
+http://127.0.0.1:45137/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+
+
+
+$ sudo apt install nginx -y
+$ export DASHBOARD_PORT=<вставьте сюда номер порта из URL команды minikube dashboard --url>
+$ sudo -E bash -c 'cat << EOF > /etc/nginx/conf.d/dashboard.conf
+server {
+  listen 8080;
+  location / {
+      proxy_set_header Host "localhost";
+      proxy_pass http://127.0.0.1:${DASHBOARD_PORT};
+  }
+}
+EOF'
+$ sudo systemctl reload nginx
+
+
+
+sudo apt install nginx -y
+
+export DASHBOARD_PORT=40061
+
+
+sudo -E bash -c 'cat << EOF > /etc/nginx/conf.d/dashboard.conf
+server {
+  listen 8080;
+  location / {
+      proxy_set_header Host "localhost";
+      proxy_pass http://127.0.0.1:${DASHBOARD_PORT};
+  }
+}
+EOF'
+
+sudo systemctl reload nginx

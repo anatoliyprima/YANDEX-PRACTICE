@@ -3,3 +3,42 @@
 spring.data.mongodb.uri mongodb://anatolyprima:Testusr1234@rc1b-dkdiam8q2r06t1bi.mdb.yandexcloud.net:27018/anatolyprima?tls=true&replicaSet=rs01
 spring.datasource.password Testusr1234
 spring.datasource.username anatolyprima
+
+
+[Unit]
+Description=HashiCorp Vault Service (Docker container)
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+
+# Версия Vault и порт для сервера
+Environment=VAULT_VERSION=1.11.3
+Environment=VAULT_PORT=8200
+
+ExecStartPre=-/usr/bin/docker exec vault stop
+ExecStartPre=-/usr/bin/docker rm vault
+ExecStartPre=/usr/bin/docker pull vault:${VAULT_VERSION}
+
+# Запуск контейнера: IPC_LOCK даёт разрешение на блокировку сброса
+# памяти на диск (например, во время свопа), а для передачи серверу
+# конфигурации и хранения данных мы используем docker volumes.
+# (Мы будем использовать файловое хранилище для секретов)
+# Переменная VAULT_ADDR понадобится для работы консольного клиента Vault.
+ExecStart=/usr/bin/docker run --rm --name vault \
+    --cap-add=IPC_LOCK \
+    -v /opt/vault/config:/vault/config \
+    -v /opt/vault/file:/vault/file \
+    -v /opt/vault/logs:/vault/logs \
+    -e VAULT_ADDR="http://127.0.0.1:${VAULT_PORT}" \
+    -p ${VAULT_PORT}:${VAULT_PORT} \
+    vault:${VAULT_VERSION} server
+
+[Install]
+WantedBy=default.target
+
+
+
+hvs.MnHZah2eSquHQZSf69TKLvQM

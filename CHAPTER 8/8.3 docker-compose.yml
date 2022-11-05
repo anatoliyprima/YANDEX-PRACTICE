@@ -1,0 +1,70 @@
+# значения переменных DEFAULT_HOST и VIRTUAL_HOST должны ьыть одинаковыми
+
+version: "3.4"
+services:
+
+  backend-blue:
+    image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-backend:latest
+# чтобы можно было использовать scale, у конейнера не должно быть определенного имени
+#    container_name: blue
+    env_file:
+      - .env_docker_backend
+    environment:
+      VIRTUAL_HOST: backend
+    restart: always
+    networks:
+      - sausage-store
+    expose:
+      - "8080"
+    healthcheck:
+       test: curl --fail -s http://localhost:8080/actuator/health
+       interval: 30s
+       timeout: 10s
+       start_period: 20s
+       retries: 6
+
+  backend-green:
+    image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-backend:latest
+# чтобы можно было использовать scale, у конейнера не должно быть определенного имени
+#    container_name: green
+    env_file:
+      - .env_docker_backend
+    environment:
+      VIRTUAL_HOST: backend
+    restart: always
+    networks:
+      - sausage-store
+    expose:
+      - "8080"
+    healthcheck:
+       test: curl --fail -s http://localhost:8080/actuator/health
+       interval: 30s
+       timeout: 10s 
+       start_period: 20s
+       retries: 6
+
+  report:
+    image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-backend-report:latest
+    container_name: backend-report
+    env_file:
+      - .env_docker_backend_report
+    restart: always
+    networks:
+      - sausage-store
+    expose:
+      - "8081"
+
+  frontend:
+    image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-frontend:latest
+    container_name: sausage-frontend
+    environment:
+      DEFAULT_HOST: backend
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    ports:
+      - "80:80"
+    networks:
+      - sausage-store
+
+networks:
+  sausage-store:

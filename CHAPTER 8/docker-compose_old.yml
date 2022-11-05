@@ -3,11 +3,9 @@ services:
 
   backend:
     image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-backend:latest
-#    container_name: sausage-backend
+    container_name: sausage-backend
     env_file:
       - .env_docker_backend
-    environment:
-      VIRTUAL_HOST: backend
     restart: always
     networks:
       - sausage-store
@@ -26,14 +24,31 @@ services:
   frontend:
     image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-frontend:latest
     container_name: sausage-frontend
-    environment:
-      DEFAULT_HOST: backend
-    volumes:
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    env_file:
+      - .env_docker_frontend
     ports:
-      - "80:80"
+      - "8080:80"
     networks:
       - sausage-store
+
+  vault:
+      image: vault:1.11.3
+      container_name: vault
+      restart: always
+      volumes:
+        - /opt/vault/config:/vault/config
+        - /opt/vault/file:/vault/file
+        - /opt/vault/logs:/vault/logs
+      cap_add:
+        - IPC_LOCK
+      environment:
+        VAULT_DEV_ROOT_TOKEN_ID: hvs.MnHZah2eSquHQZSf69TKLvQM
+#        VAULT_SERVER: "http://127.0.0.1:8200"
+        VAULT_ADDR: "http://127.0.0.1:8200"
+      ports:
+        - "8200:8300"
+      networks:
+        - sausage-store
 
 networks:
   sausage-store:

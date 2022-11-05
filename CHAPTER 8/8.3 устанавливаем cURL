@@ -1,0 +1,59 @@
+установить прям в контейнере не прокатило
+
+чтобы установить курл, нужно определиться с версией alpine которая используется при сборке образа бэка
+
+для этого проваливаемся в контейнер и смотрим содержимое файла etc/os-release
+
+cat os-release
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.13.1
+PRETTY_NAME="Alpine Linux v3.13"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+
+далее следуем инструкции https://www.cyberciti.biz/faq/how-to-install-curl-on-alpine-linux/
+
+Install cURL on Alpine Docker image
+Add following to your Docker image when using Alpine Linux version 3.3+:
+
+RUN apk --no-cache add curl
+
+For Docker images based upon older Alpine Linux:
+
+RUN apk add --update curl && \
+    rm -rf /var/cache/apk/*
+
+Измените скрипт накатки бэкенда:
+Проверьте, какой контейнер запущен сейчас (blue или green?). Допустим, запущен blue.
+Если есть запущенные green контейнеры, остановите их.
+Скачайте новую версию образа бэкенда.
+Запустите обновлённый green контейнер.
+Дождитесь статуса healthy у нового контейнера.
+Остановите blue контейнер.
+
+#изменяем скрипт накатки бэкенда:
+#проверяем запущен ли blue
+docker-compose ps | grep green
+
+#eсли есть запущенные green контейнеры, остановите их
+docker-compose stop backend-green
+
+#cкачайте новую версию образа бэкенда
+#docker login -u anatolyprima -p $GITLAB_DEPLOY_TOKEN $CI_REGISTRY
+#docker pull $CI_REGISTRY/anatolyprima/sausage-store/sausage-backend:latest
+
+#хардкод
+docker login -u anatolyprima -p aktwCaPYoCFkiFu2aHkA gitlab.praktikum-services.ru:5050
+docker pull gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-backend:latest
+
+#запустите обновлённый green контейнер
+docker-compose up -d --force-recreate backend-green
+
+#Дождитесь статуса healthy у нового контейнера
+
+
+
+
+#Остановите blue контейнер
+docker-compose stop backend-blue
