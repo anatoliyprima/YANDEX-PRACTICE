@@ -1,4 +1,4 @@
-http://127.0.0.1:45137/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+http://127.0.0.1:34567/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
 
 
 
@@ -19,7 +19,8 @@ $ sudo systemctl reload nginx
 
 sudo apt install nginx -y
 
-export DASHBOARD_PORT=40061
+export DASHBOARD_PORT=44825
+export DASHBOARD_PORT=44825
 
 
 sudo -E bash -c 'cat << EOF > /etc/nginx/conf.d/dashboard.conf
@@ -33,3 +34,7 @@ server {
 EOF'
 
 sudo systemctl reload nginx
+
+TMUX
+
+посмотреть открытые сессии    tmux

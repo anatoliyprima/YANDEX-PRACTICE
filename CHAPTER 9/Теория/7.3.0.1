@@ -1,0 +1,107 @@
+Создайте на своей виртуальной машине systemd unit-файл
+/etc/systemd/system/vault.service со следующим содержимым:
+
+[Unit]
+Description=HashiCorp Vault Service (Docker container)
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+
+# Версия Vault и порт для сервера
+Environment=VAULT_VERSION=1.11.3
+Environment=VAULT_PORT=8200
+
+ExecStartPre=-/usr/bin/docker exec vault stop
+ExecStartPre=-/usr/bin/docker rm vault
+ExecStartPre=/usr/bin/docker pull vault:${VAULT_VERSION}
+
+# Запуск контейнера: IPC_LOCK даёт разрешение на блокировку сброса
+# памяти на диск (например, во время свопа), а для передачи серверу
+# конфигурации и хранения данных мы используем docker volumes.
+# (Мы будем использовать файловое хранилище для секретов)
+# Переменная VAULT_ADDR понадобится для работы консольного клиента Vault.alias vault='sudo docker exec -it vault vault'
+ExecStart=/usr/bin/docker run --rm --name vault \
+    --cap-add=IPC_LOCK \
+    -v /opt/vault/config:/vault/config \
+    -v /opt/vault/file:/vault/file \
+    -v /opt/vault/logs:/vault/logs \
+    -e VAULT_ADDR="http://127.0.0.1:${VAULT_PORT}" \
+    -p ${VAULT_PORT}:${VAULT_PORT} \
+    vault:${VAULT_VERSION} server
+
+[Install]
+WantedBy=default.target
+
+Создайте директории для docker volumes:
+
+sudo mkdir -p /opt/vault/config
+sudo mkdir -p /opt/vault/file
+sudo mkdir -p /opt/vault/logs
+
+
+Для работы с HashiCorp Vault из командной строки нам понадобится выполнять
+команды внутри контейнера. Применяя docker exec для контейнера с именем
+vault, мы будем вызывать консольный клиент vault, а раз контейнер запущен
+под root, потребуется sudo:
+
+sudo docker exec -it vault vault
+
+Для удобства использования такой конструкции возьмём командный alias:
+
+alias vault='sudo docker exec -it vault vault'
+
+
+Статус сообщает, что сервер ещё не инициализирован — не создан корневой ключ
+шифрования секретов. Оператор (то есть вы) должен выполнить команду:
+
+vault operator init
+Unseal Key 1: qAaUOa9yA4CsCLhxm5H3KwEcmYNHXVDTkWsMpqz9xNPr
+Unseal Key 2: hOSGGWwFg96+ABAYAAevkRpEOTWAx8Pf8nLC1KAd7/0u
+Unseal Key 3: o74gtAeXL2n1yMbGoP3lMngtZZqdjD9hF3aMfpTa9zvI
+Unseal Key 4: LTU+Aj6XguiTbdXs6w5vBtWAEMCyY07Sir6svf0IO270
+Unseal Key 5: Pwnb7f2dRkE24bdQgOZ6UBJUVrVmESZJGZKHpuv/uo7h
+
+Initial Root Token: hvs.MnHZah2eSquHQZSf69TKLvQM
+
+Vault initialized with 5 key shares and a key threshold of 3. Please securely
+distribute the key shares printed above. When the Vault is re-sealed,
+restarted, or stopped, you must supply at least 3 of these keys to unseal it
+before it can start servicing requests.
+
+Vault does not store the generated root key. Without at least 3 keys to
+reconstruct the root key, Vault will remain permanently sealed!
+
+It is possible to generate new unseal keys, provided you have a quorum of
+existing unseal keys shares. See "vault operator rekey" for more information.
+
+Мы будем использовать key/value хранилище и его нужно сначала «включить»
+vault secrets enable -version=2 -path=secret kv
+
+чтобы посмотреть список секретов в хранилище, выполняется команда
+
+vault kv list secret
+
+чтобы посмотреть содержимое того или иного секрета, выполняется
+vault kv get secret/название_секрета
+
+
+student@fhm3e0r1vmeg47g9l7ha:~$ vault kv get secret/password_1
+===== Secret Path =====
+secret/data/password_1
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2022-10-04T02:47:54.954303878Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            2
+
+====== Data ======
+Key         Value
+---         -----
+passcode    qweasdzxc456

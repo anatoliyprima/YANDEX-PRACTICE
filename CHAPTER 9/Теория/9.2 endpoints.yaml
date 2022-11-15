@@ -1,0 +1,11 @@
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: nginx # тут имя должно совпадать с именем Service для связки
+subsets:
+  - addresses:
+        - ip: 172.16.128.17
+    ports:
+      - port: 80
+        name: nginx
