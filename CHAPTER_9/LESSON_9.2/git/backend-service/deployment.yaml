@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-report
+  labels:
+    app: backend-report
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: backend-report
+  template:
+    metadata:
+      labels:
+        app: backend-report
+    spec:
+      containers:
+        - name: backend-report
+          image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-backend-report:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+          - # prefix: CONFIG_
+            configMapRef:
+              name: backend-report-configmap
+
+          env:
+            - name: VAULT_HOST
+              value: 178.154.206.140
+            - name: VAULT_TOKEN
+# пока оставим переменную с токеном так, чуть позже разберусь
+#              value: hvs.MnHZah2eSquHQZSf69TKLvQM
+              valueFrom:
+                secretKeyRef:
+                  name: vault-backend-report
+                  key: vault_token
+
+          ports:
+            - name: backend-report
+              containerPort: 8080
+
+      imagePullSecrets:
+        - name: vault-backend-report
+        - name: docker-login-secrets-backend-report

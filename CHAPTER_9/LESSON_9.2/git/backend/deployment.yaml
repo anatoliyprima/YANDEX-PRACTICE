@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-backend:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+          - configMapRef:
+              name: backend-configmap
+
+          env:
+            - name: VAULT_HOST
+              value: 178.154.206.140
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-backend
+                  key: vault_token
+
+          ports:
+            - name: backend
+              containerPort: 8090
+
+      imagePullSecrets:
+        - name: vault-backend
+        - name: docker-login-secrets-backend

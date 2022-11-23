@@ -1,0 +1,45 @@
+config
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /home/student/.minikube/ca.crt
+    extensions:
+    - extension:
+        last-update: Tue, 15 Nov 2022 01:54:56 UTC
+        provider: minikube.sigs.k8s.io
+        version: v1.27.1
+      name: cluster_info
+    server: https://192.168.49.2:8443
+  name: minikube
+- cluster:
+    certificate-authority-data: ${K8S_CERTIFICATE}
+    server: ${K8S_SERVER}
+  name: yc-managed-k8s
+contexts:
+- context:
+    cluster: minikube
+    extensions:
+    - extension:
+        last-update: Tue, 15 Nov 2022 01:54:56 UTC
+        provider: minikube.sigs.k8s.io
+        version: v1.27.1
+      name: context_info
+    namespace: default
+    user: minikube
+  name: minikube
+- context:
+    cluster: yc-managed-k8s
+    namespace: ${K8S_NAMESPACE}
+    user: ${K8S_USER}
+  name: student-context
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /home/student/.minikube/profiles/minikube/client.crt
+    client-key: /home/student/.minikube/profiles/minikube/client.key
+- name: std-007-008
+  user:
+    token: ${K8S_TOKEN}

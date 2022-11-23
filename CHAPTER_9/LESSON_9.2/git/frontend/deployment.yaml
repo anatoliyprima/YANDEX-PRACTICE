@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: gitlab.praktikum-services.ru:5050/anatolyprima/sausage-store/sausage-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - name: frontend
+              containerPort: 8090
+          volumeMounts:
+          - name: frontend
+# указывается полный путь до монтируемого объекта
+            mountPath: /etc/nginx/nginx.conf
+# указываем имя переменной из конфигмапа, в данном случае
+            subPath: nginx.conf
+            readOnly: true
+      volumes:
+      - name: frontend
+        configMap:
+          name: frontend-configmap
+          items:
+# указываем имя переменной в конфигмапе
+            - key: nginx.conf
+# указываем путь или имя файла, котороые будует применяться в spec.template.spec.containers.volumeMounts.mountPath
+              path: nginx.conf
+
+      imagePullSecrets:
+        - name: docker-login-secret-frontend

@@ -19,3 +19,5 @@ student - пользователь, под которым мы заходим н
 
 на всякий случай сделаем резервную копию на стационарный сервер папки /home с файлами всех пользователей
 scp -r student@178.154.204.171:/home/ /Users/anatoliy/yandex_practicum_backup_178.154.204.171
+
+scp -r /Users/anatoliy/Documents/ATOM_2022-08-24/YANDEX PRACTICE/CHAPTER 9/backend student@178.154.204.171:/home/ATOM

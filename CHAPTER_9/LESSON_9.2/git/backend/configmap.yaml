@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-configmap
+data:
+  SPRING_FLYWAY_ENABLED: "false"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://rc1b-hbgrshwk67xn4wfm.mdb.yandexcloud.net:6432/anatolyprima"
+  SPRING_DATASOURCE_USERNAME: "anatolyprima"
+  REPORT_PATH: "./logs"
+
+#  keys: |
+#   spring.data.mongodb.uri=mongodb://anatolyprima:Testusr1234@rc1b-dkdiam8q2r06t1bi.mdb.yandexcloud.net:27018/anatolyprima?tls=true&replicaSet=rs01
+#   spring.datasource.password=Testusr1234
+#   spring.datasourcae.username=anatolyprima
